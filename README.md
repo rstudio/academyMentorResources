@@ -4,10 +4,10 @@ Welcome to `academyMentorResources`, intended as a home for mentor demos / mento
 
 Resources are organized by topic, under the general folders of
 
-- `python`
-- `tidyverse`
 - `pinr` (programming in R)
-- `shiny`
+- `python` (data science founations/python)
+- `tidyverse`(data science foundations)
+- `shiny` (intro for shiny)
 
 Guidelines for demos:
 

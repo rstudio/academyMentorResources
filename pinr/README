@@ -1,0 +1,8 @@
+Topics may include:
+- Functions
+- Control function flow
+- Iterating + writing functions (purrr intro)
+- Iterate with for loops (purrr revisted, map)
+- Function-writing best practices
+- Debugging + state management
+- Package development
