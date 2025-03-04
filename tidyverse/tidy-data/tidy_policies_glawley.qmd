@@ -1,0 +1,87 @@
+---
+title: "Posit Academy: Week 5 Demo"
+subtitle: "Create the same plot with both untidy and tidy data"
+author: "Grace Lawley"
+date: "2025-02-24"
+format: html
+---
+
+```{r}
+# load packages
+library(tidyverse)
+
+# read in policies dataset
+policies <- read_csv("../data/policies.csv")
+```
+
+
+*Goal*: Plot average `vehicle_age` and `driver_age` for each value of `area`.
+
+First, we need to calculate the averages:
+
+```{r}
+policies_avg <- policies |> 
+  group_by(area) |> 
+  summarize(mean_vehicle_age = mean(vehicle_age),
+            mean_driver_age = mean(driver_age))
+```
+
+
+## With "untidy" data
+
+
+```{r}
+head(policies_avg)
+```
+
+
+```{r}
+ggplot(policies_avg) +
+  geom_point(aes(x = area, y = mean_vehicle_age), color = "green") +
+  geom_point(aes(x = area, y = mean_driver_age), color = "red") +
+  theme_minimal()
+```
+
+
+### Takeaways:
+
+- Code repetition
+- Legend for color is not automatically added
+- Y axis label defaults to the y in the first `geom_*()` layer
+- Have to choose our own colors
+
+## With "tidy" data
+
+First, we need to reshape the data into a "tidy" format
+
+```{r}
+head(policies_avg)
+```
+
+```{r}
+policies_avg_tidy <- policies_avg |> 
+  pivot_longer(cols = starts_with("mean_"),
+               names_to = "type",
+               names_prefix = "mean_", # drop column prefix
+               values_to = "mean")
+
+head(policies_avg_tidy)
+```
+
+```{r}
+ggplot(policies_avg_tidy, aes(x = area, y = mean, color = type)) +
+  geom_point() +
+  theme_minimal()
+```
+
+
+If we wanted to make a bar chart instead of a scatter plot:
+
+```{r}
+ggplot(policies_avg_tidy, aes(x = area, weight = mean, fill = type)) +
+  geom_bar(position = "dodge") +
+  labs(y = "mean", fill = NULL) +
+  theme_minimal() + 
+  theme(legend.position = "bottom") 
+```
+

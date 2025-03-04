@@ -1,0 +1,103 @@
+---
+title: "Posit Academy: Week 5 Demo"
+subtitle: "Create the same plot with both untidy and tidy data"
+author: "Grace Lawley"
+date: "2024-10-14"
+format: html
+---
+
+
+```{r}
+# load packages
+library(tidyverse)
+library(scales)
+
+# read in covid dataset
+covid <- read_csv("../data/covid.csv")
+``` 
+
+
+*Goal*: Plot `tests`, `cases`, `deaths`, and `hospitalizations` over time for California.
+
+First we need to filter to only keep rows from California:
+
+```{r}
+covid_ca <- covid %>% 
+  filter(state == "CA")
+```
+
+## With "untidy" data
+
+```{r}
+head(covid_ca)
+```
+
+
+```{r}
+ggplot(covid_ca) +
+  geom_line(aes(x = date, y = tests), color = "blue", alpha = 0.8) +
+  geom_line(aes(x = date, y = cases), color = "green", alpha = 0.8) + 
+  geom_line(aes(x = date, y = hospitalizations), color = "purple", alpha = 0.8) +
+  geom_line(aes(x = date, y = deaths), color = "red", alpha = 0.8) +
+  theme_minimal()
+```
+
+
+
+## Takeaways:
+
+- Lots of code repetition
+- Legend for color is not automatically added
+- Y axis label defaults to the y in the first `geom_line()` layer
+- Have to choose our own colors
+
+
+## With "tidy" data
+
+
+```{r}
+head(covid_ca)
+```
+
+
+```{r}
+covid_ca_tidy <- covid_ca %>% 
+  pivot_longer(cols = tests:deaths,
+               names_to = "type",
+               values_to = "count")
+
+head(covid_ca_tidy)
+```
+
+```{r}
+ggplot(covid_ca_tidy, aes(x = date, y = count, color = type)) +
+  geom_line(alpha = 0.8) +  
+  theme_minimal() 
+```
+
+
+### Further customization
+
+```{r}
+ggplot(covid_ca_tidy, aes(x = date, y = count, color = type)) +
+  geom_line(alpha = 0.8) + 
+  # remove scientific notation
+  scale_y_continuous(label = label_comma()) + 
+  # change x axis breaks to 1 month intervals and change format of date
+  scale_x_date(date_breaks = "1 month", date_labels = "%m-%y") +   
+  # remove legend title and axes titles
+  labs(color = NULL, y = NULL, x = NULL) + 
+  theme_minimal() +
+  # move legend to the bottom and angle the x axis labels
+  theme(legend.position = "bottom",
+        axis.text.x = element_text(angle = 45)) 
+```
+
+
+Note: make sure to put `theme_minimal()` *before* `theme()`. If you call `theme_minimal()` after `theme()`, you will overwrite any customization you did in `theme()`.
+
+
+## Resources:
+
+- For date format options used in date_labels argument of `scale_x_date()`: https://rdrr.io/r/base/strptime.html
+

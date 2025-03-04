@@ -3,7 +3,10 @@ Topics may include:
 - Visualize + filter data
 - Summarize data
 - Create + select columns
-- Tidy + join tables
+- Tidy data
+    - `tidy_covid_glawley.qmd`: Create the same plot with both untidy and tidy data. Uses `pivot_longer()` and some functions from the scales package.
+    - `tidy_policies_glawley.qmd`: Create the same plot with both untidy and tidy data. Uses `pivot_longer()`.
+- Joining tables
 - Quarto
 - Data types
 - EDA | data analysis/stats
