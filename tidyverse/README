@@ -12,3 +12,6 @@ Topics may include:
 - EDA | data analysis/stats
 - Showcase results (visualize, tables, etc)
 - Quarto, Connect : communicating results
+- Other packages
+    - `purrr_covid_glawley.qmd`: Quick intro to `map()`.
+    - `gt_covid_glawley.qmd`: An extended example of how to create a customized `gt()` table.

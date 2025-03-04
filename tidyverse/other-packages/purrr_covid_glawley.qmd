@@ -1,0 +1,79 @@
+---
+title: "Posit Academy: Week 6 Demo"
+subtitle: "Quick intro to `purrr::map()`."
+author: "Grace Lawley"
+date: "2024-10-21"
+format: html
+---
+
+
+```{r}
+# load packages
+library(purrr)
+``` 
+
+
+## map()
+
+A function from the purrr package in the tidyverse
+
+```
+map(.x, .f)
+```
+
+- Inputs
+    - .x = a list or vector
+    - .f = a function
+- Applies `.f`, to each element of `.x`.
+- `map()` always returns a list
+
+
+
+### Example 1
+
+`.f` can be a named function, such as `rnorm()`
+
+```{r}
+map(1:5, rnorm, n = 10)
+```
+
+
+### Example 2
+
+`.f` can also be an anonymous function, e.g.:
+
+  - `\(x) x + 1`
+  - `function(x) x + 1`
+
+```{r}
+map(1:5, \(x) rnorm(n = 10, x))
+```
+
+## map() variants
+
+- Variants return a vector of the indicated type (or die trying)
+- `map_lgl()`: returns a logical vector
+- `map_int()`: returns a numeric vector of integers
+- `map_dbl()`: returns a numeric vector of doubles
+- `map_chr()`: returns a character vector
+
+
+```{r}
+1:5 |>
+  map(rnorm, n = 10) |>  # output a list
+  map(mean) # output a list
+```
+
+
+```{r}
+1:5 |>
+  map(rnorm, n = 10) |>  # output a list
+  map_dbl(mean) # output a vector of doubles
+```
+
+
+## Resources
+
+- This chapter of the Advanced R book: https://adv-r.hadley.nz/functionals.html#map
+- purrr::map(): https://purrr.tidyverse.org/reference/map.html
+

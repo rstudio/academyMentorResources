@@ -1,0 +1,153 @@
+---
+title: "Posit Academy: Week 10 Demo"
+subtitle: "An extended example of how to create a customized `gt()` table."
+author: "Grace Lawley"
+date: "2024-11-12"
+format: html
+---
+
+```{r}
+#| message: false
+# load packages
+library(tidyverse)
+library(gt)
+
+covid <- read_csv("data/covid.csv")
+```
+
+
+> Goal: create a gt table that looks like the following table
+
+
+```
+   |            2020            |            2021            |
+   |----------------------------|----------------------------|           
+   | total_deaths | total_cases | total_deaths | total_cases |
+---|---------------------------------------------------------|
+CT |      #       |      #      |      #       |      #      |
+MA |      #       |      #      |      #       |      #      | 
+ME |      #       |      #      |      #       |      #      | 
+NH |      #       |      #      |      #       |      #      | 
+RI |      #       |      #      |      #       |      #      | 
+
+```
+
+## Data Prep
+
+> For each state in the New England region, calculate the total number of deaths and total number of cases for the year 2020 and the year 2021.
+
+```{r}
+new_england_1 <- covid %>% 
+  filter(state %in% c("CT", "ME", "MA", "NH", "RI", "VT")) %>% 
+  mutate(year = year(date)) %>% 
+  group_by(state, year) %>% 
+  summarize(total_deaths = sum(deaths),
+            total_cases = sum(cases))
+
+new_england_1
+```
+
+In preparation for using `gt()`, we will...
+
+1. Reshape the data frame using `pivot_wider()`
+2. Prepend the year to the column names (*note*: we are purposefully using . instead of _ here)
+3. Rearrange the columns so the 2020 and 2021 columns are grouped together, respectively
+  
+```{r}
+new_england_2 <- new_england_1 %>% 
+  pivot_wider(names_from = year,
+              names_glue = "{year}.{.value}",
+              values_from = c(total_deaths, total_cases)) %>% 
+  relocate(state, starts_with("2020"), starts_with("2021"))
+
+new_england_2
+```
+
+
+## Making a gt table
+
+
+### First attempt
+
+If we try to create a gt table now...we get an error!
+```{r}
+#| eval: false
+gt(new_england_2, rowname_col = "state") 
+```
+
+
+
+The error message mentioning `groupname_col` tells us that the problem may be that `new_england_2` is a grouped data frame.
+
+
+
+We can use the `is_grouped_df()` function from the dplyr to check if a data frame is a grouped data frame.
+```{r}
+is_grouped_df(new_england_2)
+```
+
+
+The gt package will adjust the table output if the data frame is already grouped.
+```{r}
+gt(new_england_2)
+```
+
+
+This may be useful in some situations, but it's not what we want here. 
+
+
+### Second attempt
+
+If we *ungroup* the data frame and try again, we have no problems!
+```{r}
+new_england_3 <- new_england_2 %>% 
+  ungroup() 
+
+gt(new_england_3, rowname_col = "state")
+```
+
+
+### Add a tab spanner
+
+We can make the year span across two columns by creating a tab_spanner.
+```{r}
+gt(new_england_3, rowname_col = "state") %>% 
+  # group columns by year
+  tab_spanner_delim(delim = ".")
+```
+
+### Additional formatting
+
+
+```{r}
+gt(new_england_3, rowname_col = "state") %>% 
+  # group columns by year
+  tab_spanner_delim(delim = ".") %>% 
+  
+  # format cells
+  fmt_integer() %>% 
+  
+  # rename columns
+  cols_label_with(fn = ~ janitor::make_clean_names(., case = "title")) %>% 
+  
+  # make column spanners boldface
+  tab_style(style = cell_text(weight = "bold"),
+            locations = cells_column_spanners()) %>% 
+  
+  # add title
+  tab_header(title = "COVID-19 deaths and cases reported within New England region") %>% 
+  
+  # add data source note
+  tab_source_note(source_note = md("Data from the *COVID Tracking Project*"))
+```
+
+## Resources
+
+- The documentation for the gt package can be overwhelming to read. Here are some tips for navigating it:
+    - When looking at the help page for a specific function, I will skip down to the "examples" section
+    - The "Reference" page is a great place to learn about different functions available in gt: https://gt.rstudio.com/reference/index.html
+    - The "Articles" section is a great place to see actual examples of polished plots: https://gt.rstudio.com/articles/index.html
+    - I find the examples section of the documentation and the vignettes to be the most helpful when I'm making a gt table. 
+- Other resources
+    - `clean_names()` function from the janitor package: https://sfirke.github.io/janitor/reference/clean_names.html
+
