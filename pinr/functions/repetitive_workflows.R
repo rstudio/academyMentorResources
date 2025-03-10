@@ -1,8 +1,8 @@
-# Some learners might say they don't have much use for custom functions, since they mostly create figures 
-# and none of their analyses are repeated. It might be helpful to point out that even plotting tends to 
-# be repetitive in an organization. For instance, maybe all the plots from a company follow the company's 
-# style guide, with custom theme elements avoid unnecessary grid lines. We can do these things in ggplot, 
-# but it can be annoying, or we might forget the specific parameters to change inside `theme()`.
+# Custom functions are helpful for everyone. For instance, it might be helpful to point out that 
+# even plotting tends to have repetitive elements, where all plots in a report need to follow a 
+# shared style guide, or when we want to limit printing unnecessary grid lines. We can do these 
+# things in ggplot, but they take multiple lines of code, and some parameters may be hard to 
+# remember.
 
 # Define the theme elements for all plots in our company
 company_theme <- function(plot) {
