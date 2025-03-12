@@ -3,7 +3,9 @@ title: "Detecting Mismatched Keys"
 subtitle: "Join tables with care"
 author: "James Clawson"
 date: "2025-03-11"
-format: html
+format: 
+  html:
+    error: true
 ---
 
 ```{r}
@@ -56,6 +58,4 @@ Alternatively, adding `unmatched = "error"` into the joining function will retur
 ```{r}
 left_join(sw_1, sw_2, unmatched = "error")
 ```
-
-
 
