@@ -7,7 +7,7 @@ Topics may include:
     - `tidy_covid_glawley.qmd`: Create the same plot with both untidy and tidy data. Uses `pivot_longer()` and some functions from the scales package.
     - `tidy_policies_glawley.qmd`: Create the same plot with both untidy and tidy data. Uses `pivot_longer()`.
 - Joining tables
-    - `mismatched-keys_clawson.qmd`: Check for mismatched keys three different ways. Uses `anti_join()`, `setdiff()`, and `left_join(unmatched = "error")`.
+    - `mismatched-keys_jmclawson.qmd`: Check for mismatched keys three different ways. Uses `anti_join()`, `setdiff()`, and `left_join(unmatched = "error")`.
 - Quarto
 - Data types
 - EDA | data analysis/stats
