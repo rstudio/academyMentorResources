@@ -1,0 +1,61 @@
+---
+title: "Detecting Mismatched Keys"
+subtitle: "Join tables with care"
+author: "James Clawson"
+date: "2025-03-11"
+format: html
+---
+
+```{r}
+#| label: setup
+#| include: false
+# load packages
+library(dplyr)
+
+# prepare data
+sw_1 <- starwars |> 
+  mutate(name = case_when(
+    stringr::str_detect(name, "Luke") ~ tolower(name),
+    .default = name)) |> 
+  select(name, mass)
+
+sw_2 <- starwars |> 
+  select(name, height)
+```
+
+## Joining without checking
+
+These two datasets look almost the same, but one uses lowercase characters for the name in the first row, and the second uses a typical mix of uppercase and lowercase. If we join these tables, we might not notice the discrepancy, but the first row will lack a value in the `height` column:
+
+```{r}
+left_join(sw_1, sw_2)
+```
+
+## Checking with `anti_join()`
+
+It's good advice to check for mismatches with `anti_join()` to see what values are missing. Reversing the order reveals mismatched rows in each dataset:
+
+```{r}
+anti_join(sw_1, sw_2)
+anti_join(sw_2, sw_1)
+```
+
+## Checking with `setdiff()`
+
+Like other joins, `anti_join()` returns a table. To get character vectors, use `setdiff()` on the key columns:
+
+```{r}
+setdiff(sw_1$name, sw_2$name)
+setdiff(sw_2$name, sw_1$name)
+```
+
+## Checking with `unmatched = "error"`
+
+Alternatively, adding `unmatched = "error"` into the joining function will return an error when any keys are at risk of being dropped:
+
+```{r}
+left_join(sw_1, sw_2, unmatched = "error")
+```
+
+
+
