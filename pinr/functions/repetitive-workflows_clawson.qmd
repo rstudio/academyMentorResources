@@ -1,0 +1,104 @@
+---
+title: "Repetitive Workflows"
+subtitle: "Simple functions simplify repetitive tasks"
+author: "James Clawson"
+date: "2025-03-11"
+format: html
+---
+
+```{r}
+#| label: setup
+library(ggplot2)
+library(palmerpenguins)
+```
+
+Custom functions are especially helpful for repetitive workflows. For instance, it can be helpful to create custom functions that apply a common style or that limit printing unnecessary grid lines.
+
+## Start from working code
+
+When writing functions, it's always best to start from working code:
+
+```{r}
+penguins |> 
+  # basic plot
+  ggplot(aes(
+    y = species, 
+    fill = species)) +
+  geom_bar() +
+  labs(title = "Chinstraps are the least common species in the data") +
+  # common adjustments
+  theme_bw() +                             # use a common theme
+  theme(
+    plot.title.position = "plot",          # shift title left
+    axis.title.y = element_text(angle = 0, vjust = 0),# rotate & shift Y-axis title
+    axis.title.x = element_text(hjust = 0),# shift X-axis title
+    panel.grid.major.y = element_blank(),  # hide major horizontal lines
+    panel.grid.minor.y = element_blank()   # hide minor horizontal lines
+    ) +
+  scale_fill_brewer(palette = "Dark2")     # use a common palette
+```
+
+This works, but the code in lines 29--38 is likely to be repeated in some way for all figures in a report. Additionally, it can be hard to remember parameters like `plot.title.position` and `panel.grid.major.y`.
+
+## Generalize it into functions
+
+Working code can be generalized into functions and often broken down into steps. In this case, it makes sense to separate a general `common_style()` from other functions like `drop_grid_y()` and `drop_grid_x()` to hide horizontal or vertical grid lines, allowing the user to choose when each is applied:
+
+```{r}
+# Define the common theme elements for all plots in a report
+common_style <- function(plot) {
+  plot +
+    theme_bw() +
+    theme(
+      plot.title.position = "plot",
+      axis.title.y = element_text(angle = 0, vjust = 0),
+      axis.title.x = element_text(hjust = 0)) +
+    scale_fill_brewer(palette = "Dark2")
+}
+
+# Drop Y-axis grid lines when unneeded
+drop_grid_y <- function(plot) {
+  plot +
+    theme(
+      panel.grid.major.y = element_blank(),
+      panel.grid.minor.y = element_blank())
+}
+
+# Drop X-axis grid lines when unneeded
+drop_grid_x <- function(plot) {
+  plot +
+    theme(
+      panel.grid.major.x = element_blank(),
+      panel.grid.minor.x = element_blank())
+}
+```
+
+With these functions, it's now easier to make figures that follow a common style. First, plots are created:
+
+```{r}
+penguin_plot_1 <- penguins |> 
+  ggplot(aes(
+    y = species, 
+    fill = species)) +
+  geom_bar() +
+  labs(title = "Chinstraps are the least common species in the data")
+
+penguin_plot_2 <- penguins |> 
+  ggplot(aes(
+    x = island, 
+    fill = species)) +
+  geom_bar() +
+  labs(title = "More penguins live on Biscoe, but Chinstraps live only on Dream")
+```
+
+Then functions apply the repetitive workflows so plots can share a common style:
+
+```{r}
+penguin_plot_1 |> 
+  common_style() |> 
+  drop_grid_y()
+
+penguin_plot_2 |> 
+  common_style() |> 
+  drop_grid_x()
+```
