@@ -78,4 +78,7 @@ As always, check that it works:
 ```{r}
 starwars |> 
   get_sample(c("name", "height", "mass"))
+
+starwars |> 
+  get_sample(c("species", "homeworld"), .size = 2)
 ```
