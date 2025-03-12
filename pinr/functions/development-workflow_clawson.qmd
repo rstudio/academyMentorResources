@@ -1,0 +1,81 @@
+---
+title: "Developing Functions"
+subtitle: "From specific tasks to general workflows"
+author: "James Clawson"
+date: "2025-03-11"
+format: 
+  html:
+    warning: false
+---
+
+```{r}
+#| label: setup
+#| include: false
+library(dplyr)
+```
+
+## Start with a specific task
+
+Even when we know we want to write a function to simplify some task, it's best to get the code working outside of a function first. For example, if I'd like to be able to find the average of *any* set of columns in *any* data set, I'll start by finding the average of a *specific* set of columns in a *specific* dataset:
+
+```{r}
+starwars |> 
+  summarize(
+    across(
+      .cols = all_of(c("height", "mass")), 
+      .fns = mean, 
+      na.rm = TRUE
+      )
+    )
+```
+
+Getting the code right will sometimes take trial and error. For instance, here I initially used `c()` to define the `.cols` vector. Only after getting a warning did I remember to use `all_of()`.
+
+## Generalize it into a function
+
+Once the code works in a way that's expected, it's time to generalize it into a function. Replace each specific item with a general variable:
+
+```{r}
+get_averages <- function(data, variables) {
+  data |> 
+    summarize(
+      across(
+        .cols = all_of(variables), 
+        .fns = mean, 
+        na.rm = TRUE
+        )
+      )
+}
+```
+
+Check to make sure the function still works as expected:
+
+```{r}
+starwars |> 
+  get_averages(c("height", "mass"))
+```
+
+## Modify as desired
+
+We'll always want to start from working code. Now that we have a working function, we can use it to imagine another function that takes random samples from columns instead of finding their averages:
+
+```{r}
+get_sample <- function(data, variables, .size = 1) {
+  data |> 
+    summarize(
+      across(
+        .cols = all_of(variables), 
+        .fns = sample, 
+        size = .size
+      )
+    )
+}
+```
+
+In this example, we used dotted notation to define our `.size` varable. We do this to avoid argument conflicts: Writing something like `size = size` can make it unclear where a value comes from, but `size = .size` avoids the ambiguity.
+
+As always, check that it works:
+```{r}
+starwars |> 
+  get_sample(c("name", "height", "mass"))
+```
