@@ -16,7 +16,7 @@ library(dplyr)
 
 ## Start with a specific task
 
-Even when we know we want to write a function to simplify some task, it's best to get the code working outside of a function first. For example, if I'd like to be able to find the average of *any* set of columns in *any* data set, I'll start by finding the average of a *specific* set of columns in a *specific* dataset:
+Even when the goal is to simplify some general workflow, it's best to get the code working outside of a function first. For example, if the goal is to find the average of *any* set of columns in *any* data set, it's best to start by finding the average of a *specific* set of columns in a *specific* dataset:
 
 ```{r}
 starwars |> 
@@ -29,7 +29,7 @@ starwars |>
     )
 ```
 
-Getting the code right will sometimes take trial and error. For instance, here I initially used `c()` to define the `.cols` vector. Only after getting a warning did I remember to use `all_of()`.
+Getting the code right will sometimes take trial and error. Here, I initially used `c()` to define the `.cols` vector. Only after getting a warning did I remember to use `all_of()`.
 
 ## Generalize it into a function
 
@@ -57,7 +57,7 @@ starwars |>
 
 ## Modify as desired
 
-We'll always want to start from working code. Now that we have a working function, we can use it to imagine another function that takes random samples from columns instead of finding their averages:
+Always, it's best to start from working code. Code from this working function can be adapted for another that instead returns random samples from columns:
 
 ```{r}
 get_sample <- function(data, variables, .size = 1) {
@@ -72,7 +72,7 @@ get_sample <- function(data, variables, .size = 1) {
 }
 ```
 
-In this example, we used dotted notation to define our `.size` varable. We do this to avoid argument conflicts: Writing something like `size = size` can make it unclear where a value comes from, but `size = .size` avoids the ambiguity.
+This function uses dotted notation to define the `.size` varable. We do this to avoid naming conflicts: Writing something like `size = size` can make it unclear where a value comes from, but `size = .size` avoids the ambiguity.
 
 As always, check that it works:
 ```{r}
