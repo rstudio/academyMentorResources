@@ -1,0 +1,49 @@
+
+## SQL command to pandas DF with SQLite DB
+The database is taken from this github repository, [https://github.com/dtaivpp/car_company_database/tree/master](https://github.com/dtaivpp/car_company_database/tree/master). SQLite doesnt use a db server. The db is the local file.
+There is also the accoding ER diagram.
+
+
+```{python}
+import sqlite3  # no pip install necessary
+import pandas as pd
+
+print(sqlite3.version)
+
+con = sqlite3.connect("./Car_Database.db")
+cursor = con.cursor()
+```
+
+```{python}
+cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+tables = cursor.fetchall()
+
+print("Tables in the database:")
+for table in tables:
+    print(table[0])
+```
+
+```{python}
+cursor.execute("SELECT * FROM Models;")
+models = cursor.fetchall()
+
+print("Models in the database:")
+for row in models:
+    print(row)
+```
+### query with pandas
+```{python}
+query = "SELECT * FROM Models;"
+df_pd_query = pd.read_sql_query(query, con)
+```
+### query with python sqlite3 and creating a pandas DF
+```{python}
+cursor.execute("SELECT * FROM Models;")
+rows = cursor.fetchall()
+column_names = [col_name[0] for col_name in cursor.description]
+df_manually = pd.DataFrame(rows, columns=column_names)
+```
+
+```{python}
+con.close()
+```
