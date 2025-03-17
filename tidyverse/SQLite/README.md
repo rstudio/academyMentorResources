@@ -6,4 +6,4 @@ There is an equivalent example for Python SQLite in the python folder.
 
 To install RSQLite: 
 > install.packages("RSQLite")
-// install.packages("https://cran.r-project.org/src/contrib/Archive/RSQLite/RSQLite_2.3.4.tar.gz", repos=NULL, type="source")
+> install.packages("https://cran.r-project.org/src/contrib/Archive/RSQLite/RSQLite_2.3.4.tar.gz", repos=NULL, type="source")
