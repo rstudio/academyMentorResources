@@ -1,1 +1,13 @@
-bla
+```{r}
+library(RSQLite)
+
+con <- dbConnect(RSQLite::SQLite(), "data/Car_Database.db")
+
+query <- "SELECT * FROM Models"
+df <- dbGetQuery(con, query)
+dbListTables(con)
+```
+
+```{r}
+dbDisconnect(con)
+```
