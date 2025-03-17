@@ -1,0 +1,63 @@
+---
+title: "Posit Academy: Week 2 Demo"
+subtitle: "Two ways to filter"
+author: "Grace Lawley"
+date: "2024-09-15"
+format: html
+---
+  
+```{r}
+# load packages
+library(tidyverse)
+
+# read in covid dataset
+covid <- read_csv("../data/covid.csv")
+```
+
+
+## Question 1
+
+> Q: If we want to filter `covid` so we only have data for specific states, what's the easiest way to do this?
+
+A couple of options are shown below. I've included `count(state)` to check that the resulting filtered dataframe is what we are expecting.
+
+### Option 1: combine multiple logical tests using & or |
+
+```{r}
+covid |> 
+  filter(state == "OR" | state == "WA" | state == "CA") |> 
+  count(state)
+```
+
+Pros/Cons:
+
+-   Clear, easy to read
+-   Repetitive, lots of typing
+-   Not ideal if filtering for many states
+
+### Option 2: use the built-in %in% operator
+
+> Note: to look up the help documentation for the %in% operator, type the following into the console: ?`%in%`
+
+```{r}
+covid |>
+  filter(state %in% c("OR", "WA", "CA")) |>   # filter for 3 states
+  count(state)                                # get counts for each unique state
+```
+
+Pros/Cons:
+
+-   Ideal if filtering for many states
+-   Can create vector with states to include *outside* of pipe
+
+```{r}
+states_to_include <- c("OR", "WA", "CA")
+
+covid |> 
+  filter(state %in% states_to_include) |> 
+  count(state)
+```
+
+
+
+

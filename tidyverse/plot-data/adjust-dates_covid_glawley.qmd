@@ -1,0 +1,41 @@
+---
+title: "Posit Academy: Week 2 Demo"
+subtitle: "How to adjust date breaks and angle axis text in ggplot2"
+author: "Grace Lawley"
+date: "2024-09-15"
+format: html
+---
+  
+```{r}
+# load packages
+library(tidyverse)
+
+# read in covid dataset
+covid <- read_csv("../data/covid.csv")
+```
+
+
+How to adjust date breaks in ggplot using `scale_x_date()`:
+  
+```{r}
+# only keep NY data
+covid_ny <- covid |> 
+  filter(state == "NY")
+
+# 3 month intervals
+ggplot(covid_ny, aes(x = date, y = cases)) +
+  geom_line() +
+  scale_x_date(date_breaks = "3 months")
+
+# 1 year intervals
+ggplot(covid_ny, aes(x = date, y = cases)) +
+  geom_line() +
+  scale_x_date(date_breaks = "1 year")
+
+# 1 month intervals + angled text
+ggplot(covid_ny, aes(x = date, y = cases)) +
+  geom_line() +
+  scale_x_date(date_breaks = "1 month") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) # to angle text and shift hjust
+```
+

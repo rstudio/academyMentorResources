@@ -1,0 +1,49 @@
+---
+title: "Posit Academy: Week 3 Demo"
+subtitle: "Two ways to remove a legend"
+author: "Grace Lawley"
+date: "2024-09-22"
+format: html
+---
+  
+```{r}
+# load packages
+library(tidyverse)
+
+# read in covid dataset
+covid <- read_csv("../data/covid.csv")
+
+# only data from OR, WA, and CA
+covid_west <- covid %>%
+  filter(state %in% c("OR", "WA", "CA"))
+```
+
+There are multiple different ways to remove a legend. Below are the two ways I do it.
+
+
+## Option 1
+
+Remove the legend after the fact (i.e., after the corresponding `geom_*()` layer), by using `guides()` to target the aesthetic that is "creating" the legend. 
+
+```{r}
+ggplot(covid_west, aes(x = date, y = cases, color = state)) +
+  geom_line() + 
+  facet_wrap(vars(state), ncol = 1) +
+  labs(title = "COVID Cases in West Coast States",
+       x = NULL,
+       caption = "Source: https://covidtracking.com/") +
+  guides(color = "none")
+```
+
+## Option 2
+
+Prevent the legend from being created at all, by adding `show.legend = FALSE` inside of the `geom_*()` layer.
+
+```{r}
+ggplot(covid_west, aes(x = date, y = cases, color = state)) +
+  geom_line(show.legend = FALSE) + 
+  facet_wrap(vars(state), ncol = 1) +
+  labs(title = "COVID Cases in West Coast States",
+       x = NULL,
+       caption = "Source: https://covidtracking.com/") 
+```

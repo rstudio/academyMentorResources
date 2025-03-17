@@ -1,0 +1,81 @@
+---
+title: "Posit Academy: Week 3 Demo"
+subtitle: "Introduction to ggplot2"
+author: "Grace Lawley"
+date: "2024-09-22"
+format: html
+---
+  
+```{r}
+# load packages
+library(tidyverse)
+
+# read in covid dataset
+covid <- read_csv("../data/covid.csv")
+
+# only data from OR, WA, and CA
+covid_west <- covid %>%
+  filter(state %in% c("OR", "WA", "CA"))
+```
+
+
+## `geom_line()`
+
+To create a minimal line plot:
+
+```{r}
+ggplot(covid_west, aes(x = date, y = cases, color = state)) +
+  geom_line()
+```
+
+## Themes
+
+ggplot2 has lots of themes included that work out of the box, such as `theme_bw()`, `theme_linedraw()`, and `theme_minimal()`.
+
+You can read more about theme here: https://ggplot2.tidyverse.org/reference/ggtheme.html
+
+```{r}
+ggplot(covid_west, aes(x = date, y = cases, color = state)) +
+  geom_line(alpha = 0.8) + # alpha changes the transparency of the line
+  theme_minimal()
+```
+
+
+## `facet_wrap()`
+
+You can "facet" a plot by a variable in your dataset by using `facet_wrap`. 
+The `ncol` and `nrow` arguments let you adjust how many columns or rows you want to have.
+
+```{r}
+ggplot(covid_west, aes(x = date, y = cases, color = state)) +
+  geom_line() +
+  facet_wrap(vars(state), ncol = 1)
+```
+```{r}
+ggplot(covid_west, aes(x = date, y = cases, color = state)) +
+  geom_line() +
+  facet_wrap(vars(state), nrow = 2)
+```
+
+When faceting, both axes are fixed by default (i.e., the same axis is shared across all plots).
+You can change this by setting the `scales` to `"free"`, `"free_x"`, or `"free_y"`.
+
+```{r}
+ggplot(covid_west, aes(x = date, y = cases, color = state)) +
+  geom_line() + 
+  facet_wrap(vars(state), ncol = 1, scales = "free") 
+```
+
+## `labs()`
+
+You can use the `labs()` function to rename the axes, add a title, subtitle, caption, etc.
+
+```{r}
+ggplot(covid_west, aes(x = date, y = cases, color = state)) +
+  geom_line() + 
+  facet_wrap(vars(state), ncol = 1) +
+  labs(title = "COVID Cases in West Coast States",
+       x = NULL,
+       caption = "Source: https://covidtracking.com/",
+       color = NULL)
+```
