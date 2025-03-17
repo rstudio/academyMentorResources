@@ -5,6 +5,6 @@ The example db is taken from [https://github.com/dtaivpp/car_company_database/tr
 There is an equivalent example for Python SQLite in the python folder.
 
 To install RSQLite: 
-> install.packages("RSQLite")
+`install.packages("RSQLite")`
 If there is a conflict in istalling the latest version in the campsite, then try an older verion:
-> install.packages("https://cran.r-project.org/src/contrib/Archive/RSQLite/RSQLite_2.3.4.tar.gz", repos=NULL, type="source")
+`install.packages("https://cran.r-project.org/src/contrib/Archive/RSQLite/RSQLite_2.3.4.tar.gz", repos=NULL, type="source")`
