@@ -5,7 +5,7 @@ There is also the accoding ER diagram.
 
 
 ```{python}
-import sqlite3  # no pip install necessary
+import sqlite3  # no pip install necessary. sqlite3 is a base lib in python
 import pandas as pd
 
 print(sqlite3.version)
