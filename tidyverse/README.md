@@ -12,6 +12,10 @@
 - `plot-data/drop-legend_covid_glawley.qmd`
     - Two ways to remove a legend. Uses `guides()`.
 
+### Mutate data
+- `mutate-data/ifelse-casewhen_covid_glawley.qmd`
+    - Recode column values; first using `if_else()`, then using `case_when()`.
+
 ### Tidy data
 - `tidy-data/tidy_covid_glawley.qmd`
     - Create the same plot with both untidy and tidy data. Uses `pivot_longer()` and some functions from the scales package.
@@ -39,7 +43,8 @@ Other topics to include:
 - Quarto, Connect : communicating results
 - Working with dates
 
-File naming format:
+## File naming format:
 - Currently using: `tutorial-name_dataset_name.qmd`
-- Omit data name if no external dataset is used
-- Name could be first initial + last name or github username
+- Omit dataset if no external dataset is used
+- Name is first initial + last name or github username (or something else)
+

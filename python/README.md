@@ -21,7 +21,7 @@ Other topics to include:
 - quarto
 
 
-File naming format:
+## File naming format:
 - Currently using: `tutorial-name_dataset_name.qmd`
-- Omit data name if no external dataset is used
-- Name could be first initial + last name or github username
+- Omit dataset if no external dataset is used
+- Name is first initial + last name or github username (or something else)

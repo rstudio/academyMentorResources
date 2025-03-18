@@ -1,0 +1,72 @@
+---
+title: "Posit Academy: Week 4 Demo"
+subtitle: "Recode column values with `if_else()` vs. with `case_when()`"
+author: "Grace Lawley"
+date: "2024-10-06"
+format: html
+---
+
+```{r}
+# load packages
+library(tidyverse)
+
+# read in covid dataset
+covid <- read_csv("../data/covid.csv") 
+```
+
+
+```{r}
+# regions, as defined by US Census Bureau
+
+northeast <- c("CT", "ME", "MA", "NH", "RI", "VT",
+               "NJ", "NY", "PA")
+
+midwest <- c("IL", "IN", "MI", "OH", "WI", 
+             "IA", "KS", "MN", "MO", "NE", "ND", "SD")
+
+south <- c("DE", "FL", "GA", "MD", "NC", "SC", "VA", "WV",
+           "AL", "KY", "MS", "TN",
+           "AR", "LA", "OK", "TX")
+
+west <- c("AZ", "CO", "ID", "MT", "NV", "NM", "UT", "WY",
+          "AK", "CA", "HI", "OR", "WA")
+```
+
+
+# Create region column using `if_else()`
+
+```{r}
+covid_regions_1 <- covid %>% 
+  mutate(region = if_else(state %in% northeast, "northeast",
+                          if_else(state %in% midwest, 
+                                  "midwest",
+                                  if_else(state %in% south, 
+                                          "south",
+                                          if_else(state %in% west, 
+                                                  "west",
+                                                  NA)))))
+```
+
+
+```{r}
+covid_regions_1 %>% 
+  count(region, state)
+```
+
+# Create region column using `case_when()`
+
+```{r}
+covid_regions_2 <- covid %>% 
+  mutate(region = case_when(state %in% northeast ~ "northeast",
+                            state %in% midwest ~ "midwest",
+                            state %in% south ~ "south",
+                            state %in% west ~ "west",
+                            .default = NA))
+```
+
+
+```{r}
+covid_regions_2 %>%
+  count(region, state)
+```
+
