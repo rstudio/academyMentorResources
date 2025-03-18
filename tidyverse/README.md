@@ -22,8 +22,8 @@
 - `tidy-data/tidy_policies_glawley.qmd`
     - Create the same plot with both untidy and tidy data. Uses `pivot_longer()`.
 
-### Joining tables
-- `joining-tables/mismatched-keys_jmclawson.qmd`
+### Join data
+- `join-data/mismatched-keys_jmclawson.qmd`
     - Check for mismatched keys three different ways. Uses `anti_join()`, `setdiff()`, and `left_join(unmatched = "error")`.
 
 ### Other packages
@@ -43,7 +43,7 @@ Other topics to include:
 - Quarto, Connect : communicating results
 - Working with dates
 
-## File naming format:
+## File naming format
 - Currently using: `tutorial-name_dataset_name.qmd`
 - Omit dataset if no external dataset is used
 - Name is first initial + last name or github username (or something else)
