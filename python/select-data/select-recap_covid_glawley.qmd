@@ -1,0 +1,151 @@
+---
+title: "Week 3 Demo"
+subtitle: "Review of selecting columns and rows."
+author: "Grace Lawley"
+date: "2024-05-22"
+format: html
+---
+
+```{python setup}
+import pandas as pd
+from matplotlib import rcParams
+
+pd.set_option('mode.copy_on_write', True)
+
+covid = pd.read_csv('data/covid.csv')
+```
+
+
+# 1. Selecting columns with `[]`
+
+
+```{python}
+# select a single column
+covid['date']
+```
+
+
+
+```{python}
+# select multiple columns
+covid[['date', 'state', 'tests']]
+```
+
+
+```{python}
+# select one column + row 
+covid['date'][0]
+```
+
+
+# 2. Extract rows with `.loc[]`
+
+<https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.loc.html>
+
+
+```
+<dataset>.loc[<row indices>]
+```
+
+
+```{python}
+# get first row (returns a series, use double brackets to get a df)
+covid.loc[0] 
+
+
+covid.loc[[0]]
+```
+
+
+
+
+```{python}
+# get first six rows (multiple rows > returns a dataframe)
+covid.loc[0:5]
+
+# ...same as
+covid.loc[:5]
+
+
+# note that using [] only returns 5 rows 
+covid[0:5]
+```
+
+
+
+
+
+```{python}
+# get multiple, non-adjacent rows
+covid.loc[[0,5,10]]
+```
+
+
+
+
+```{python}
+# get all rows
+covid.loc[:]
+```
+
+
+```{python}
+# only get rows that meet logical condition
+covid.loc[covid['cases'] != 0]
+```
+
+
+
+
+# 3. Extract rows & columns with `.loc[]`
+
+```
+<dataset>.loc[<row indices>, <column indices>]
+```
+
+```{python}
+# get one column
+covid.loc[:, 'date'] # returns a series
+
+
+covid.loc[:, ['date']] # returns a dataframe
+```
+
+
+```{python}
+# get three columns
+covid.loc[:, ['date', 'state', 'cases']]
+```
+
+
+```{python}
+# get a range of columns (note: not wrapped in brackets)
+covid.loc[:, 'date':'cases']
+```
+
+# 4. Chained assignment error
+
+Let's say you want to change the first row of the `tests` column of `covid`
+
+```{python}
+# select with .loc[], and update
+covid.loc[0, 'tests'] = 1
+```
+
+
+```{python}
+# select with [] and update (gives an error)
+covid['tests'][0] = 2
+```
+
+
+
+## Takeaways:
+
+- In general, you should avoid using `[]` to select rows.
+- If you are doing any subsetting that involves rows, you should use a single call to `.loc[]` to perform the entire subsetting.
+- If you're interested in learning more, check out "returning a view versus copy": https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+
+
+
+

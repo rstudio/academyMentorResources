@@ -8,6 +8,10 @@
 - `plot-data/adjust-dates_covid_glawley.qmd`
     - How to adjust date breaks using the mizani package. Uses `pd.to_datetime()`, `p9.scale_x_datetime()`, and `p9.theme()`. 
 
+### Select data
+- `select-data/select-recap_covid_glawley.qmd`
+    - Follow up to the select columns tutorials in the course. Uses `[]` and `.loc[]`. Also touches on chained assignment error.
+
 
 
 Other topics to include:
