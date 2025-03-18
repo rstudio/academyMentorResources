@@ -1,0 +1,83 @@
+---
+title: "Week 2 Demo"
+subtitle: "Working with dates in pandas and plotnine"
+author: "Grace Lawley"
+date: "2024-05-15"
+format: html
+---
+
+```{python setup}
+import pandas as pd
+from plotnine import *
+from matplotlib import rcParams
+
+pd.set_option('mode.copy_on_write', True)
+rcParams.update({'savefig.bbox': 'tight'}) # Keeps plotnine legend from being cut off
+
+# read in covid dataset
+covid = pd.read_csv('../data/covid.csv')
+```
+
+## Plot from week 2 milestone recreation
+
+```{python}
+subset = covid.loc[covid['state'] == 'NY']
+
+(ggplot(subset, aes(x = 'date', y = 'cases'))
+  + geom_line(group = 1)
+)
+```
+> Q: How can we make the date on the x-axis legible?
+
+
+## Step 1: Convert column to a datetime object
+
+```{python}
+# before conversion
+subset.info()
+
+# convert to a datetime object
+subset['date'] = pd.to_datetime(subset['date'])
+
+# after conversion
+subset.info()
+
+# plot again
+(
+  ggplot(subset, aes(x = 'date', y = 'cases'))
+  + geom_line(group = 1)
+)
+```
+
+## Step 2: adjust date breaks in plot
+
+Also see - https://plotnine.org/tutorials/miscellaneous-manipulating-date-breaks-and-date-labels.html
+
+```{python}
+# requires date_breaks() from mizani.breaks
+from mizani.breaks import date_breaks
+
+(
+  ggplot(subset, aes(x = 'date', y = 'cases'))
+  + geom_line(group = 1)
+  + scale_x_datetime(breaks = date_breaks('1 month')) # adjust date breaks
+  + theme(axis_text_x = element_text(rotation = 45)) # rotate text
+)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,30 @@
+---
+title: "Week 2 Demo"
+subtitle: "Different ways to import packages and functions"
+author: "Grace Lawley"
+date: "2024-05-15"
+format: html
+---
+
+```{python}
+#| eval: false
+# 1. import package, name as is
+import plotnine
+plotnine.ggplot()
+
+
+# 2. import package, name as an alias
+import plotnine as p9
+p9.ggplot()
+
+
+# 3. import specific functions
+from plotnine import ggplot, aes
+ggplot()
+
+
+# 4. import ALL functions
+from plotnine import *
+ggplot()
+```
+
