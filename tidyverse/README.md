@@ -32,6 +32,10 @@
 - `other-packages/gt_covid_glawley.qmd`
     - An extended example of how to create a customized `gt()` table.
 
+### Quarto
+- `quarto/quarto_v_rmarkdown_jmclawson.md`
+    - Comparison helping to answer the question "Should I switch from R Markdown to Quarto?"
+
 Other topics to include:
 - R intro/overview
 - Summarize data
