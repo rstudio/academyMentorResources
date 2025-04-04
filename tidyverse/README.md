@@ -33,7 +33,7 @@
     - An extended example of how to create a customized `gt()` table.
 
 ### Quarto
-- `quarto/quarto_v_rmarkdown_jmclawson.md`
+- `quarto/quarto-v-rmarkdown_jmclawson.md`
     - Comparison helping to answer the question "Should I switch from R Markdown to Quarto?"
 
 Other topics to include:
