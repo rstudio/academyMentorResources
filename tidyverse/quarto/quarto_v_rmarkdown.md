@@ -2,7 +2,7 @@
 
 Quarto and R Markdown are very similar. If you're already comfortable using R Markdown, there might be less reason for you to make the switch to Quarto. But if you're still getting the hang of either, it's probably wiser to build muscle memory with Quarto. Between the two, there's a lot of overlap in format, use, and compatibility, so skills used in one will largely map to skills that are useful in the other. Below are some arguments for choosing Quarto over R Markdown, prepared only based on the *untrue* premise that only one tool can be used.
 
-## R Markdown is the past; Quarto is the future
+## Quarto is the future
 
 As an open source project, Quarto is actively maintained by Posit, with continual improvements and [a roadmap](https://github.com/quarto-dev/quarto-cli/milestones) for future releases. Meanwhile, the rmarkdown package is also maintained by Posit, but its development is far less active, with [a roadmap](https://github.com/rstudio/rmarkdown/milestones) suggesting less attention. The R Markdown format is more than the package---and the format *isn't* going away---but it's also expected to remain comparatively stagnant.
 
