@@ -20,7 +20,7 @@ Speaking of figure cross references, Quarto's feature set is generally easier to
 
 ## Quarto is language agnostic
 
-Both formats can work with multiple coding languages, but R Markdown documents will always be rendered using R. If you're already typically an R user, this won't make any difference for you, but it means that anyone whose primary language is Python will need to install R to use R Markdown. Moreover, while both R Markdown and Quarto support inline code for R using something like `\`{r} 1+2\`` to return the value of a variable or calculation using R, only Quarto supports inline code like `\`{python} 1+2\`` doing the same thing with Python.
+Both formats can work with multiple coding languages, but R Markdown documents will always be rendered using R. If you're already typically an R user, this won't make any difference for you, but it means that anyone whose primary language is Python will need to install R to use R Markdown. Moreover, while both R Markdown and Quarto support inline code for R using something like `` `{r} 1+2` `` to return the value of a variable or calculation using R, only Quarto supports inline code like `` `{python} 1+2` `` doing the same thing with Python.
 
 ## Conclusion
 
