@@ -13,7 +13,9 @@ The modular format of R Markdown means that it relies on R packages to extend it
 ## Quarto has better syntax
 
 Speaking of figure cross references, Quarto's feature set is generally easier to use. In R Markdown with the bookdown package, we need to say something like `\@ref(fig:dog)` using LaTeX syntax to reference a figure made by the code chunk labelled `dog`. But in Quarto, the same figure is referenced natively with just `@fig-dog`. Similarly, both R Markdown and Quarto allow you to create a footnote with a carrot, like this: `^[This is a footnote.]`. But only(?) Quarto will also support naming footnote to define them outside of the particular context,`^[fn2]` thereby freeing up the flow of your writing.`^[additional]` 
+
 `^[fn2]: After all, it can be annoying to write a sentence in the middle of another sentence.`
+
 `^[additional]: The "only(?)" is used here because it's hard to find a straight answer online. Instead, there are many pages sharing simple "fixes" to get this kind of syntax working in certain kinds of R Markdown output. It seems like it maybe might work some of the time, but only with bandaids added. Meanwhile, Quarto supports it fully.`
 
 ## Quarto is language agnostic
