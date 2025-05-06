@@ -1,0 +1,71 @@
+---
+title: "Posit Academy: Week 4 Demo"
+subtitle: "Create several new columns at once with across()"
+author: "Marieke Jones"
+date: "2025-05-05"
+format: html
+---
+
+```{r}
+#| label: setup
+library(tidyverse)
+
+covid <- read_csv("tidyverse/data/covid.csv")
+```
+
+Let's say we want to create several columns using the same transformation. In the Week 4 milestone recreation, you were asked to create two new columns, named `cumul_cases` and `cumul_deaths`, which contained a cumulative sum (`cumsum()`) of cases and of deaths for each state. Then you were told to select the two new columns along with state and date, and arrange the rows by `state` and `date`.
+
+The milestone recreation solution looks like this:
+
+```{r}
+#| label: recreation-create
+covid %>%
+  group_by(state) %>%
+  mutate(cumul_cases = cumsum(cases), 
+         cumul_deaths = cumsum(deaths)) %>%
+  arrange(state, date) %>%
+  select(state, date, contains("cumul")) %>%
+  ungroup()
+```
+
+Let's say now that you want to create the same type of cumulative sum for each of the numeric columns. We know how to use `mutate()` to create the columns one by one
+
+```{r}
+covid %>%
+  group_by(state) %>%
+  mutate(cumul_tests = cumsum(tests),
+         cumul_cases = cumsum(cases), 
+         cumul_hosps = cumsum(hospitalizations),
+         cumul_deaths = cumsum(deaths)) %>%
+  arrange(state, date) %>%
+  select(state, date, contains("cumul")) %>%
+  ungroup()
+```
+
+But there is a faster way!
+
+Now let's see a way to create all of the cumulative columns in one `mutate()` statement using `across()`. 
+
+The `across()` function takes 2 main arguments. The `.cols = ` argument names the columns you want to transform and the `.fns = ` argument names the function you want to apply to each column. If the function you want to apply requires additional arguments of its own, there are ways to specify those too! Here, I will just show you a simple application using the `cumsum()` function
+
+Note that there are many ways to specify the columns that you want to transform using the `select()` helper functions you learned this week. Here I am just selecting the columns using `tests:deaths` which selects all columns `tests` through `deaths`.
+
+```{r}
+covid %>%
+  group_by(state) %>%
+  mutate(across(tests:deaths, cumsum)) %>%
+  arrange(state, date) %>%
+  select(state, date, contains("cumul")) %>%
+  ungroup()
+```
+
+That worked, but I want to name the new columns something different from the original column names. Take a look at the help menu for `across()` to see how to name the columns and apply what we learn to use the `.names =` argument to name the new columns
+
+```{r}
+covid %>%
+  group_by(state) %>%
+  mutate(across(tests:deaths, cumsum, .names = "cumul_{.col}")) %>%
+  arrange(state, date) %>%
+  select(state, date, contains("cumul")) %>%
+  ungroup()
+```

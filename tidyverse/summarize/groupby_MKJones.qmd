@@ -1,0 +1,99 @@
+---
+title: "Posit Academy: Week 3 Demo"
+subtitle: "Explorig the behavior of group_by()"
+author: "Marieke Jones"
+date: "2025-04-23"
+format: html
+---
+
+```{r}
+#| label: setup
+library(tidyverse)
+
+covid <- read_csv("tidyverse/data/covid.csv")
+```
+
+Groupings created by `group_by()` persist sometimes longer than you may want, with interesting results. 
+
+To explore the behavior of `group_by()` and `summarize()` a bit more, let's start with a dataset that has year month and day as their own variables
+
+```{r}
+covid %>%
+  mutate(year = year(date),
+         month = month(date),
+         day = day(date)) %>%
+  select(date, year, month, day)
+```
+
+Yes, that looks good. Save the new variables
+
+```{r}
+covid <- covid %>%
+  mutate(year = year(date),
+         month = month(date),
+         day = day(date))
+```
+
+Count the years
+
+```{r}
+covid %>%
+  count(year)
+```
+
+Now let's calculate the total deaths for each state in each year and in each month
+
+```{r}
+covid %>%
+  group_by(state, year, month) %>%
+  summarize(total_deaths = sum(deaths),
+            total_cases = sum(cases))
+
+# save it
+covid_month <- covid %>%
+  group_by(state, year, month) %>%
+  summarize(total_deaths = sum(deaths),
+            total_cases = sum(cases))
+
+covid_month
+```
+
+Notice that only the months grouping has been removed. The resulting dataset is still grouped by state and by year. If we don't remove those groupings, they will persist.
+
+Use the previous dataset to calculate the overall sum of deaths. I'm expecting ONE number
+
+```{r}
+covid_month %>%
+  summarize(total_deaths = sum(total_deaths)) 
+```
+
+I get 102 rows, one for each state-year combination. I don't get one row because my dataset was still grouped (by `state` and `year`)!. The `summarize()` function removes one layer of groups, but you may want to remove them all using the `.groups = ` argument to `summarize()`
+
+Like this
+
+```{r}
+covid %>%
+  group_by(state, year, month) %>%
+  summarize(total_deaths = sum(deaths),
+            total_cases = sum(cases),
+            .groups = "drop")
+
+# then summarize for the overall total deaths
+covid %>%
+  group_by(state, year, month) %>%
+  summarize(total_deaths = sum(deaths),
+            total_cases = sum(cases),
+            .groups = "drop") %>%
+  summarize(overall_death = sum(total_deaths))
+
+# you can also accomplish the ungrouping via the ungroup() function
+covid %>%
+  group_by(state, year, month) %>%
+  summarize(total_deaths = sum(deaths),
+            total_cases = sum(cases)) %>%
+  ungroup() %>%
+  summarize(overall_death = sum(total_deaths))
+```
+
+In my experience, it is best to write groupings from biggest to smallest so that if you do want to perform sequential summaries, the grouping behavior of `group_by()` will more often be what you expect and want.
+
