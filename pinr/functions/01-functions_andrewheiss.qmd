@@ -1,0 +1,62 @@
+---
+title: "Functions and workflows"
+subtitle: "Week 1"
+author: "Andrew Heiss"
+date: "2025-05-14"
+format: html
+---
+
+## General resources on workflows
+
+- [Jenny Bryan's original work on project-based workflows](https://www.tidyverse.org/blog/2017/12/workflow-vs-script/)
+- [*R for Data Science*'s chapter on projects and workflows](https://r4ds.hadley.nz/workflow-scripts.html)
+- [Fancy workflows with {targets}](https://books.ropensci.org/targets/)
+
+## Starting with the milestone
+
+### Make sure the code works with one year
+
+```{.r}
+library(tidyverse)
+
+one_year_raw <- read_csv("data/acs-2019.csv")
+
+one_year_clean <- one_year_raw |>
+  mutate(
+    across(
+      c(owner_occupied, renter_occupied, gas_heat),
+      ~ . / occupied_housing
+    )
+  )
+
+one_year_clean
+```
+
+### Stick that working code into a function
+
+```{.r}
+read_year <- function(dataset) {
+  one_year_raw <- read_csv(dataset)
+
+  one_year_clean <- one_year_raw |>
+    mutate(
+      across(
+        c(owner_occupied, renter_occupied, gas_heat),
+        ~ . / occupied_housing
+      )
+    )
+}
+
+read_year("data/acs-2019.csv")
+```
+
+## Bonus: Walrus operators
+
+```{.r}
+make_data <- function(var_name) {
+  tibble({{var_name}} := 1:2)
+}
+
+make_data("qwerqwer")
+make_data(qwerqwer)
+```
