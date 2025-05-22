@@ -1,0 +1,133 @@
+---
+title: "Control function flow"
+subtitle: "Week 2"
+author: "Andrew Heiss"
+date: "2025-05-20"
+format:
+  html:
+    toc: true
+---
+
+## Vectors and lists
+
+```{r}
+# Different ways to make vectors
+x <- c(1, 2, 3, 4, 5)
+x <- 1:5
+x <- seq(1, 5, by = 1)
+x <- seq(1, 5, by = 0.1)
+
+# All items in a vector have to be the same type
+# Adding a character "3" forces R to make all the other elements characters
+x <- c(1, 2, "3", 4, 5)
+x
+
+# ... which means you can do math with it anymore
+mean(x)
+
+# You can name slots in a vector if you want
+x <- c(first = 1, second = 2, red = 3, 4, 5)
+x
+
+# And you can access elements by name
+x["second"]
+
+
+# Lists are collections of things, and list elements can be any type and any length
+z <- list(1:5, "A")
+z
+
+# List elements can be named and you can reference them by name
+z <- list(numbers = 1:5, letter = "A")
+z$numbers
+z$letter
+
+
+# Most R objects are secretly just lists with lots of different slots
+model <- lm(mpg ~ cyl, data = mtcars)
+
+model$coefficients
+model$residuals
+
+# You can access deeply nested list elements too, by name...
+model$qr$qr
+# ...or by position...
+model[[7]][[1]]
+```
+
+## List columns
+
+Data frames can contain list columns, which is super fun and cool because you can keep deeply nested lists all together in one place and iterate through them.
+
+Here is a data frame with three rows, with a column named "data" that contains a complete subset of the `mtcars` data:
+
+```{r}
+#| warning: false
+#| message: false
+
+library(tidyverse)
+library(broom)  # For extracting stuff from model objects
+
+qwer <- mtcars |> 
+  group_by(cyl) |> 
+  nest()
+qwer
+```
+
+We can then run `lm()` on each of the smaller datasets and extract pieces of that model object. The "model" column here contains the three regression models, and "coef_thing" contains the coefficient for `disp`
+
+```{r}
+qwer <- mtcars |> 
+  group_by(cyl) |> 
+  nest() |> 
+  mutate(model = map(data, \(x) lm(mpg ~ disp, data = x))) |> 
+  mutate(coef_thing = map_dbl(model, ~ .$coefficients[[2]]))
+qwer
+```
+
+↑ That's the same as doing this, but these are all separate objects that you now have to keep track of:
+
+```{r}
+thing1 <- lm(mpg ~ disp, data = filter(mtcars, cyl == 6))
+thing1$coefficients[[2]]
+thing2 <- lm(mpg ~ disp, data = filter(mtcars, cyl == 4))
+thing2$coefficients[[2]]
+thing3 <- lm(mpg ~ disp, data = filter(mtcars, cyl == 8))
+thing3$coefficients[[2]]
+```
+
+You can use `unnest()` to convert a list column back to a regular long data frame:
+
+```{r}
+qwer <- mtcars |> 
+  group_by(cyl) |> 
+  nest() |> 
+  mutate(model = map(data, \(x) lm(mpg ~ disp, data = x))) |> 
+  mutate(coef_thing = map(model, ~ tidy(., conf.int = TRUE))) |> 
+  unnest(coef_thing)
+qwer
+```
+
+And then you can filter it and mutate it and plot it and do whatever other normal data manipulation stuff you want:
+
+```{r}
+qwer |> 
+  filter(term == "disp") |> 
+  ggplot(aes(x = estimate, y = factor(cyl))) + 
+  geom_pointrange(aes(xmin = conf.low, xmax = conf.high)) +
+  labs(title = "Coefficient for disp across cylinders")
+```
+
+## Milestone start
+
+```{{r}}
+data |>
+  select(division, where(is.numeric), -year) |>
+  pivot_longer(-division) |>
+  filter(name == var) |>
+  group_by(division, name) |>
+  summarize(value = sum(value, na.rm = TRUE)) |>
+  ungroup() |>
+  arrange(desc(value)) |>
+  pivot_wider()
+```
