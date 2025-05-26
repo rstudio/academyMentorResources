@@ -1,0 +1,66 @@
+---
+title: "Validating column existence with purrr::possibly()"
+author: "James Clawson"
+date: "2025-04-09"
+format: html
+---
+
+Lessons briefly mention `purrr::safely()`, which is used to create "safe" functions that work in spite of errors. It's just one example of purrr's adverbs that have useful functionality: https://purrr.tidyverse.org/reference/index.html#adverbs
+ 
+Another adverb is `possibly()`, which we can use to create a simple test for validating a column's existence in a data frame. Defining a function from purrr's adverbs requires a different notation than we're typically used to, but we can still make sense of it.
+
+## Define a function
+
+purrr's adverbs offer a kind of replacement to the typical `function()` definition:
+
+```{r}
+library(tidyverse)
+
+has_column <- possibly(\(...) ncol(select(...)) > 0, otherwise = FALSE)
+```
+
+This function has two parts:
+
+1. An anonymous function that passes an arbitrary number of arguments to dplyr's `select()`, counts the number of columns in the resulting data frame, and returns `TRUE` if the number of columns is greater than zero. Because of the way `select()` works, the number of columns will always be greater than zero -- or `select()` will give an error for trying to select columns that don't exist.
+
+2. An `otherwise` argument, which defines what happens if the first step returns an error. In this case, it returns `FALSE`.
+
+It's a quick way of saying "Check the data frame and column in ... to see if the column exists. If it does, return TRUE, and if it doesn't, return FALSE." This kind of function is easy to use with validation, and it doesn't require any strange conversion of column names to strings. 
+
+Here's the function working in practice:
+
+```{r}
+has_column(starwars, homeworld)
+#> [1] TRUE
+has_column(starwars, planet)
+#> [1] FALSE
+```
+
+## Use to validate
+
+With `has_column()` defined, we can add it to a battery of validating steps in any custom function:
+
+```{r}
+get_avg <- function(df, var) {
+  if (!is.data.frame(df)) {
+    stop("`df` must be a data frame")
+  }
+  
+  if (!has_column(df, {{var}})) {
+    stop("`var` must be a column in `df`")
+  }
+  
+  df |> 
+    pull({{var}}) |> 
+    mean(na.rm = TRUE)
+}
+```
+
+And here's what we get:
+
+```{r}
+get_avg(starwars, weight)
+#> Error in get_avg(starwars, weight): `var` must be a column in `df`
+get_avg(starwars, mass)
+#> [1] 97.31186
+```
