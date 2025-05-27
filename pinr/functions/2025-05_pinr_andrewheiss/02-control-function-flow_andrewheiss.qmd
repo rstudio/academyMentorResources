@@ -1,11 +1,7 @@
 ---
-title: "Control function flow"
-subtitle: "Week 2"
+title: "Week 2: Control function flow"
 author: "Andrew Heiss"
 date: "2025-05-20"
-format:
-  html:
-    toc: true
 ---
 
 ## Vectors and lists

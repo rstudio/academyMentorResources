@@ -1,0 +1,18 @@
+project:
+  type: website
+
+website:
+  title: "pinr resources"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+  sidebar:
+    contents:
+      - index.qmd
+      - auto: "*.qmd"
+
+format:
+  html:
+    theme: zephyr
+    toc: true
