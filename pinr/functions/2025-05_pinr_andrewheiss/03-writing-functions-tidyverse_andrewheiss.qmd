@@ -230,3 +230,69 @@ mpg |>
 ```
 
 That `eval(substitute(...))` stuff is gross and complex, hence the invention of `{{}}`
+
+## Intuition behind pipes and variable flow
+
+Three ways of doing the same thing ([via this](https://aysps.github.io/2024-aysps-dataviz-fall/session_1/slides/05_transform-data.html#51)):
+
+Nested functions:
+
+```{.r}
+leave_house(get_dressed(get_out_of_bed(wake_up(me, time = "8:00"), side = "correct"), pants = TRUE, shirt = TRUE), car = TRUE, bike = FALSE)
+```
+
+Intermediate variables:
+
+```{.r}
+me
+woken_up_me <- wake_up(me, time = "8:00")
+out_of_bed_me <- get_out_of_bed(woken_up_me, side = "correct")
+dressed_me <- get_dressed(out_of_bed_me, pants = TRUE, shirt = TRUE)
+left_house_me <- leave_house(dressed_me, car = TRUE, bike = FALSE)
+```
+
+Pipes:
+
+```{.r}
+me |>
+  wake_up(time = "8:00") |>
+  get_out_of_bed(side = "correct") |>
+  get_dressed(pants = TRUE, shirt = TRUE) |>
+  leave_house(car = TRUE, bike = FALSE)
+```
+
+## Walruses
+
+To use an embraced variable name as the name for a variable in `mutate()` or `summarize()`, you need to use the walrus operator, or `:=`. That's because, according to the [tidy eval documentation](https://ggplot2.tidyverse.org/reference/tidyeval.html):
+
+> For technical reasons, the R language doesn't support complex expressions on the left of `=`, so we use `:=` as a workaround.
+
+```{r}
+find_median <- function(data_thing, var = hwy) {
+  data_thing |> 
+    summarize({{var}} := median({{var}}))
+}
+
+mpg |> 
+  find_median(cty)
+```
+
+## Dots
+
+The special `...` argument absorbs all other arguments passed to the function and you can use them elsewhere. Like here, I pass any extra arguments to `plot_with_dots_labels()` into ggplot's `labs()`
+
+```{r}
+plot_with_dots_labels <- function(data_thing, var = hwy, by = class, ...) {
+  ggplot(data = data_thing, aes(x = {{ var }}, y = {{ by }})) +
+    geom_point() +
+    labs(...)
+}
+
+mpg |>
+  plot_with_dots_labels(
+    x = "Highway MPG",
+    y = NULL,
+    title = "Thing",
+    subtitle = "Other thing"
+  )
+```
