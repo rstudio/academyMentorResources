@@ -164,3 +164,330 @@ plot_over_time <- function(measure, df = acs, by = sex, facet = region) {
     facet_wrap(vars({{ facet }}))
 }
 ```
+
+## Regular expressions and escaping
+
+If you're doing any work with regular expressions, you sometimes want to search for special reserved regular expression characters like `$` (normally means "end of string") or `|` (normally means "or").
+
+If you use `$` like normal like this, it'll return TRUE, but not because it actually found the `$`—it's true because it found the end of the string:
+
+```{r}
+# $ is in here, but the TRUE is a lie
+stringr::str_detect("The item costs $5", "$")
+
+# $ isn't in here, yet it's still TRUE because there's an end of the string
+stringr::str_detect("The item costs 5 dollars", "$")
+```
+
+To tell R to consider `$` to be a literal dollar sign and not a special regex character, you have to escape it with `\`:
+
+```{r}
+#| error: true
+stringr::str_detect("The item costs $5", "\$")
+```
+
+HOWEVER, R (like lots of other languages) gets confused with escape characters and will give an error. The escape character itself also needs to be escaped like `\\$`:
+
+```{r}
+stringr::str_detect("The item costs $5", "\\$")
+stringr::str_detect("The item costs 5 dollars", "\\$")
+```
+
+
+Even if you're not searching for things, you have to escape string characters if you're using double quotes inside double quotes, or single quotes inside single quotes:
+
+```{r}
+# Single inside double or double inside single is fine:
+cat("This is 'a quote'")
+cat('This is "a quote"')
+
+# Double inside double or single inside single needs a \
+cat("This is \"a quote\"")
+cat('This is \'a quote\'')
+```
+
+This is important when quotes are mixed:
+
+```{r}
+cat("Bob said \"Sally says 'Hi'.\"")
+```
+
+Where life gets super fun is when you need to use the literal `\` character, which you have to escape.
+
+Like, if you have a file path like `C:\Users\your-name\Desktop`, you have to escape all those slashes:
+
+```{r}
+cat("C:\\Users\\your-name\\Desktop")
+```
+
+And if you want to search for a slash in the string, you can't search for `\\`—you have to search for `\\\\` because there are doubled slashes in the path string and you have to escape each one in the search string:
+
+```{r}
+stringr::str_detect("C:\\Users\\your-name\\Desktop", "\\\\")
+```
+
+lol. This creates something that's officially called the [leaning toothpick syndrome](https://en.wikipedia.org/wiki/Leaning_toothpick_syndrome). It's the worst.
+
+One good solution to all this is to use something called raw strings, which are strings where you don't need to escape things. Support for raw strings in R was added in v4.0—see [here](https://josiahparry.com/posts/2023-01-19-raw-strings-in-r.html) and [here](https://r4ds.hadley.nz/strings.html#sec-raw-strings) for some details and examples.
+
+To create a raw string in R, you put a `r` in front of the quotes and some sort of brackets inside the quotes, like these:
+
+- `r"(blah)"`
+- `r"{blah}"`
+- `r"[blah]"`
+
+Anything inside the `r"(...)"` doesn't need to be escaped—including `\`s and quote characters:
+
+```{r}
+# No need to escape quotes!
+cat(r"(Bob said "Sally says 'Hi'.")")
+
+# No need to escape \s!
+cat(r"(C:\Users\your-name\Desktop)")
+```
+
+This makes string searching a little easier:
+
+```{r}
+# Ew
+stringr::str_detect(
+  "C:\\Users\\your-name\\Desktop", 
+  "\\\\"
+)
+
+# Nice
+stringr::str_detect(
+  r"(C:\Users\your-name\Desktop)", 
+  r"(\\)"  # Still need to escape the \ for regex purposes, but not for R
+)
+```
+
+## Checking if numbers are integer-ish
+
+In the materials for this week, you learned about `rlang::is_ingegerish()`, which lets you check if a whole number is a whole number regardless of how it's stored internally.
+
+R has multiple types of numeric data types, like `double` (can potentialy have decimals) and `integer` (can never have decimals), which are all considered to be an overarching `numeric` class:
+
+```{r}
+# Appending L to a number makes it an integer (idk why tho)
+# You can also do as.integer(5) instead of 5L
+
+# Both of these are numeric
+is.numeric(5)
+is.numeric(5L)
+```
+
+Even though `5` has no decimals and looks like an integer, R counts it as a double since it could potentially have decimals, so it won't be considered an integer:
+
+```{r}
+# 5 is a double…
+is.double(5)
+is.double(5L)
+
+# 5 is *not* an integer…
+is.integer(5)
+is.integer(5L)
+```
+
+If you want to check if a given number is a whole number in a function, you'll be tempted to use `is.integer()`, but that can mess you up!
+
+Like this goofy function where it repeats the word "Hi" some number of times:
+
+```{r}
+say_hi <- function(n) {
+  rep("Hi", times = n)
+}
+
+say_hi(3)
+```
+
+If we want to make sure that `n` is a whole number (like, we don't want to say "Hi" 3.14 times), we could do this:
+
+```{r}
+say_hi <- function(n) {
+  if (!is.integer(n)) {
+    cli::cli_abort("`n` must be {.cls integer}, not {.cls {typeof(n)}}")
+  }
+
+  rep("Hi", times = n)
+}
+```
+
+But this breaks when people (reasonably!) pass values like `3`:
+
+```{r}
+#| error: true
+say_hi(3)
+```
+
+That's because 3 is *technically* a double. 
+
+We could force the user to pass a real integer:
+
+```{r}
+say_hi(3L)
+say_hi(as.integer(3))
+```
+
+But that's gross.
+
+So instead, we can check if the value of `n` is an integer-ish whole number. We can do that with `rlang::is_integerish()`, which considers doubles without decimals, like `3` to behave like integers:
+
+```{r}
+rlang::is_integerish(3)
+```
+
+This makes for a better argument check:
+
+```{r}
+#| error: true
+say_hi <- function(n) {
+  if (!rlang::is_integerish(n)) {
+    cli::cli_abort("`n` must be {.cls integer}, not {.cls {typeof(n)}}")
+  }
+
+  rep("Hi", times = n)
+}
+
+say_hi(3)
+say_hi(3.14)
+```
+
+## Checking if numbers are equal-ish
+
+Relatedly, what if you want to check if a number is close enough to another number? Like, for all intents and purposes in your analysis, 2.00001 and 2.000000001 are equivalent?
+
+```{r}
+thing1 <- 2.00001
+thing2 <- 2.000000001
+
+# These aren't equal, but we *want* them to be counted as equal
+thing1 == thing2
+```
+
+There isn't a magical `is_equalish()` function in {rlang} for this, but there are some other ways.
+
+### {testthat}
+
+The {testthat} package is normally used for building unit tests for R  packages, but it can also be used outside of formal testing. Its `expect_equal()` has a `tolerance` argument that defines how much the two values can be different before they're counted as different:
+
+```{r}
+# These are the same
+testthat::expect_equal(thing1, thing2, tolerance = 0.0001)
+```
+
+```{r}
+#| error: true
+# These aren't the same
+testthat::expect_equal(thing1, thing2, tolerance = 0.000000001)
+```
+
+One downside to {testthat} is that its functions don't return true or false, so you can't easily use them in conditional statements:
+
+```{r}
+results <- testthat::expect_equal(thing1, thing2, tolerance = 0.0001)
+results
+```
+
+So you can't do something like this—the nice {cli} messages never get used because {testthat} uses its own error messaging system.
+
+```{r}
+#| error: true
+if (testthat::expect_equal(thing1, thing2, tolerance = 0.0000000001)) {
+  cli::cli_alert_success("They're the same!")
+} else {
+  cli::cli_alert_warning("They're different!")
+}
+```
+
+### `all.equal()`
+
+Base R has an `all.equal()` function that checks if two values are the same:
+
+```{r}
+all.equal(2, 2)
+```
+
+It also has a `tolerance` argument:
+
+```{r}
+all.equal(thing1, thing2, tolerance = 0.0001)
+```
+
+It returns TRUE when the test is true, and it returns a message (not FALSE) when it's not:
+
+```{r}
+all.equal(thing1, thing2, tolerance = 0.00000001)
+```
+
+Since it returns TRUE, you can use it in conditional things:
+
+```{r}
+if (all.equal(thing1, thing2, tolerance = 0.0001)) {
+  cli::cli_alert_success("They're the same!")
+} else {
+  cli::cli_alert_warning("They're different!")
+}
+```
+
+But since it returns text when FALSE, you can't use it in conditional things:
+
+```{r}
+#| error: true
+
+if (all.equal(thing1, thing2, tolerance = 0.000000001)) {
+  cli::cli_alert_success("They're the same!")
+} else {
+  cli::cli_alert_warning("They're different!")
+}
+```
+
+booo
+
+One way around this is to use base R's `isTRUE()` function, which returns TRUE if the thing you feed it is TRUE and returns FALSE if it's not:
+
+```{r}
+isTRUE(all.equal(thing1, thing2, tolerance = 0.0001))
+isTRUE(all.equal(thing1, thing2, tolerance = 0.000000001))
+```
+
+That makes the conditional check look like this:
+
+```{r}
+if (isTRUE(all.equal(thing1, thing2, tolerance = 0.000000001))) {
+  cli::cli_alert_success("They're the same!")
+} else {
+  cli::cli_alert_warning("They're different!")
+}
+```
+
+### `all.equal()` wrapped up nicely
+
+Ultimately we want to use some function that returns both TRUE and FALSE, not (1) its own error message like {testthat} or (2) TRUE and text like `all.equal()`.
+
+`isTRUE(all.equal(..., tolerance))` works great for this, but it's verbose and ugly and convoluted. So we can make our own little helper function for it:
+
+```{r}
+is_equalish <- function(x, y, tolerance = 1e-9) {
+  isTRUE(all.equal(x, y, tolerance = tolerance))
+}
+
+is_equalish(thing1, thing2, tolerance = 0.0001)
+is_equalish(thing1, thing2, tolerance = 0.000000001)
+```
+
+This makes nicer conditional checks:
+
+```{r}
+if (is_equalish(thing1, thing2, tolerance = 0.0001)) {
+  cli::cli_alert_success("They're the same!")
+} else {
+  cli::cli_alert_warning("They're different!")
+}
+
+if (is_equalish(thing1, thing2, tolerance = 0.000000001)) {
+  cli::cli_alert_success("They're the same!")
+} else {
+  cli::cli_alert_warning("They're different!")
+}
+```
