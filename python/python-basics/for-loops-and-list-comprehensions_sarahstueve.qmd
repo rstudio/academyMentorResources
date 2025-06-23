@@ -1,0 +1,65 @@
+---
+title: "for Loops and List Comprehensions"
+author: "Sarah Stueve"
+format: html
+editor: visual
+jupyter: python3
+---
+
+## for Loops and List Comprehensions Tutorial (using lists as the data source)
+
+This tutorial explains a specific type of syntax you'll find frequently in Python forums because it can be really useful: list comprehensions. In order to talk about them, we also need to talk about for loops!
+
+Let's say we create a variable `fruits` which is assigned to a list containing fruit names as strings, such as `'apple'`:
+
+```{python}
+fruits = ['apple', 'banana', 'pear']
+fruits
+```
+
+Looping is when we "traverse" or "iterate" over some sort of sequence and repeat the same code a set number of times. Typically, for each of the elements in the sequence. In the below loop, we "traverse by index", meaning we loop over all the possible index values for elements in the `fruits` list. We can then a) print the index value (assigned to `i` and print the element assigned to that index `fruits[i]`.
+
+```{python}
+for i in range(len(fruits)):
+    print(i, ": ", fruits[i])
+```
+
+But, if we don't need the index value, a lot of times we will "traverse by element", which means we loop through all the elements of a sequence. In this case, for each iteration, `fruit` is assigned to one of the fruit name strings, which we print out:
+
+```{python}
+for fruit in fruits:
+    print(fruit)
+```
+
+What if we wanted to make a *new* list containing an updated version of the elements in the old one? In this case, we want to title-case each of the fruit name strings. To do this, we can create a variable assigned to an empty list (`fruits_title`) and append (or add on to the end) a new updated fruit name at each iteration. At the end, we'll have a list containing title-cased fruit names. We can also look at `fruits` and see that that sequence remained the same:
+
+```{python}
+fruits_title = []
+for fruit in fruits:
+    fruits_title.append(fruit.title())
+fruits_title
+
+fruits
+```
+
+List comprehensions are basically just a way of "simplifying" that syntax, or collapsing it into one line. The below code is completely equivalent to the above loop. Python evaluates the code inside the new list brackets *first*, so it starts with the loop and says essentially add the titlecased version of the fruit string to this new list, for each fruit in the `fruits` (plural) list:
+
+```{python}
+fruits_title = [fruit.title() for fruit in fruits]
+fruits_title
+```
+
+We could also create an upper-cased version where we traverse by index over the `fruits` list:
+
+```{python}
+fruits_upper = [fruits[i].upper() for i in range(len(fruits))]
+fruits_upper
+```
+
+If we wanted to do this with a series, we would simply loop over the series and either update the existing column we're looping over at the end (aka, assigning a variable to the output) *or* we would create a new column with the updated values.
+
+Enjoy!
+
+[Additional resources, similar to content from this tutorial]{.underline}
+
+W3 Schools: [for Loops Tutorial](https://www.w3schools.com/python/python_for_loops.asp), [List Comprehension Tutorial](https://www.w3schools.com/python/python_lists_comprehension.asp)
