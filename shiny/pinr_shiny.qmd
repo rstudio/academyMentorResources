@@ -1,0 +1,71 @@
+---
+author: Eric R. Scott
+---
+
+If learners have previously gone through `pinr`, some suggested tips or modifications
+
+-   Keep your `app.R` "clean" by writing functions and putting them in scripts in `R/`. They will be sourced automatically when running your app.
+
+-   Real life Shiny development looks like this for me:
+
+    1.  Write some R code that does what I want with a subset of data
+
+    ``` r
+    region <- "West"
+    name <- "Phoenix Sky Harbor"
+    var <- "temp_avg"
+
+    d <- readr::read_csv("data/weather.csv")
+    d_city <- d |> filter(name %in% name)
+    d_city |>
+      ggplot(aes(x = date, y = .data[[var]])) +
+      geom_line()
+    ...
+    ```
+
+    2.  Turn that code into (a) function(s) and put in `R/`
+
+    ``` r
+    # `d_city`: a filtered version of the `d` tibble
+    # `var`: character; the name of the weather variable to plot 
+    plot_city <- function(d_city, var) {
+      d_city |>
+        ggplot(aes(x = date, y = .data[[var]])) +
+        geom_line()
+    }
+    ```
+
+    3.  Use the function in the shiny app
+
+    ``` r
+    output$plot <- renderPlot({
+      plot_city(d_city(), input$var)
+    })
+    ```
+
+-   They have encountered `browser()`, so you can show them how to use it to debug Shiny apps by placing it inside a reactive *or* a function they've written. E.g. what the heck does a file upload widget return?
+
+    ``` r
+    d <- reactive({
+      req(input$upload)
+      browser()
+      readr::read_csv(input$upload$datapath)
+    })
+    ```
+    Or even create a debug button in the app!  This will cause the console to enter debug mode when the button is pressed.
+
+    ```{r}
+    #| filename: ui
+    #| eval: false
+
+    actionButton("debug", "Enter Debug Mode")
+    ```
+
+    ```{r}
+    #| filename: server
+    #| eval: false
+
+    observeEvent(input$debug, {
+      browser()
+    })
+    ```
