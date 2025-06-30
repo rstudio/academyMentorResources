@@ -52,3 +52,20 @@ If learners have previously gone through `pinr`, some suggested tips or modifica
       readr::read_csv(input$upload$datapath)
     })
     ```
+    Or even create a debug button in the app!  This will cause the console to enter debug mode when the button is pressed.
+
+    ```{r}
+    #| filename: ui
+    #| eval: false
+
+    actionButton("debug", "Enter Debug Mode")
+    ```
+
+    ```{r}
+    #| filename: server
+    #| eval: false
+
+    observeEvent(input$debug, {
+      browser()
+    })
+    ```
