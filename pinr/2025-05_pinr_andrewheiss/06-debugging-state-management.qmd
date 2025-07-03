@@ -1,0 +1,292 @@
+---
+title: "Week 6: Debugging and state management"
+author: "Andrew Heiss"
+date: "2025-06-26"
+---
+
+We covered all the content for automatic parameterized reports and debugging [back in week 4](/04-iterate-for-loops.qmd), but you all had questions about using `map2()` and `pmap()` with `mutate()`, so here are some examples of those!
+
+## `map2()` and `pmap()`
+
+You've already seen how to use `map()` to iterate across a vector or list with some function. Like, here's a standard basic example of `map()` (or technically `map_dbl()` since the function returns a number):
+
+```{r}
+#| warning: false
+#| message: false
+
+library(tidyverse)
+
+add_one <- function(value) {
+  value + 1
+}
+
+some_numbers <- c(1, 6, 3, 7)
+
+# With the anonymized \() lambda notation
+# You could also do map_dbl(some_numbers, add_one), but like to be explicit about arguments
+map_dbl(some_numbers, \(x) add_one(value = x))
+```
+
+`map2()` works like regular `map()`, but it iterates across two different vectors or lists at the same time. Here it will work through both `some_numbers` and `some_other_numbers` and add them together:
+
+```{r}
+add_two_numbers <- function(thing1, thing2) {
+  thing1 + thing2
+}
+
+some_numbers <- c(1, 6, 3, 7)
+some_other_numbers <- c(2, 1, 3, 4)
+
+map2_dbl(
+  some_numbers,
+  some_other_numbers,
+  \(x, y) add_two_numbers(thing1 = x, thing2 = y)
+)
+
+# Or, less verbosely:
+map2_dbl(some_numbers, some_other_numbers, add_two_numbers)
+```
+
+In practice, I actually rarely use `map2()` because it's limited to only two inputs. If you potentially could use 3 inputs, you'd need to use `pmap()`, which is for any number of inputs:
+
+- `map()`: iterate over **one** vector/list
+- `map2()`: iterate over **two** vectors/lists
+- `pmap()`: iterate over **a list of any number** of vectors/lists
+
+Here's the `pmap()` version of that `map2()` example:
+
+```{r}
+pmap_dbl(
+  list(
+    some_numbers,
+    some_other_numbers
+  ),
+  \(x, y) add_two_numbers(thing1 = x, thing2 = y)
+)
+
+# Or, less verbosely:
+pmap_dbl(list(some_numbers, some_other_numbers), add_two_numbers)
+```
+
+Even if I'm only iterating across two things, I'll typically use `pmap()` just in case it ever needs to be expanded.
+
+## Iterating in a {dplyr} pipeline
+
+The reason `map2()` came up was because of this example SAS code that iterates across and cleans a few sets of paired columns:
+
+```default
+array1 counts c1 c2 c3 c4 c5
+array2 percents p1 p2 p3 p4 p5
+loop i=1 to dim(array1)
+{
+if is.na(percents(i)) and !is.na(counts(i)) and !is.na(total)
+then percents(i) <- counts(i)/total
+}
+```
+
+The corresponding dataset for this kind of code would look something like this (though I've renamed the `c*` and `p*` columns to `ct` and `pct` for clarity):
+
+```{r}
+example <- tibble(
+  ct1 = 1:5,
+  ct2 = 2:6,
+  ct3 = 3:7,
+  pct1 = c(1, 2, NA, 4, 5) / 10,
+  pct2 = c(NA, 3, 4, 5, 6) / 10,
+  pct3 = 3:7 / 10
+) |>
+  mutate(total = ct1 + ct2 + ct3)
+example
+```
+
+That SAS code checks if any of the percent columns contain missing values and then calculates the percet manually if so. It loops through both the counts and percents as indexed pairs (hence the `i` in the for loop).
+
+### Manually
+
+In R, no looping is technically necessary, especially if there's a limited subset of paired columns. This does the same thing as the SAS code—it checks if `pct1` (or 2 or 3) is missing, and if so, calculates a new percent, and if not, returns the existing percent:
+
+```{r}
+example |> 
+  mutate(
+    pct1 = ifelse(is.na(pct1), ct1 / total, pct1),
+    pct2 = ifelse(is.na(pct2), ct2 / total, pct2),
+    pct3 = ifelse(is.na(pct3), ct3 / total, pct3)
+  )
+```
+
+That works great! But it's a little repetitive. It seems like a good use case for `map2()`, since we could iterate across both the `pct*` and the `ct*` columns simultaneously.
+
+### Programatically with `across()`
+
+There are a couple different ways to do this programmatically, but we can't actually do this with `map2()` because we're in a {dplyr} pipeline. Earlier in the course you learned about `across()` for running a function across multiple columns. Here we'd want to theoretically use something like `across2()` to work across pairs of `ct*` and `pct*` columns, but that doesn't exist.
+
+One approach is to use `across()` to run a function on each of the `pct*` columns and then reference or lookup the corresponding `ct*` column while iterating. There are two neat helper functions you can use inside functions that you use in `across()`:
+
+- `cur_column()`, which gives you access to the *name* of the current column being iterated (while `.x` would give you the *value* of the column being iterated)
+- ~~`cur_data()`, which gives you access to the whole dataset that `mutate(across(...))` is working on~~
+- wait just kidding, `cur_data()` has been deprecated. It'll give you a warning that tells you to use `pick()` instead. If you use `pick(everything())`, you'll get the whole dataset you're iterating across.
+
+So here, we can use `across()` on all the columns that start with `pct`. We're not iterating across the pairs of `pct` + `ct` columns—just `pct`. But that's fine, because we can use `pick(everything())` inside `across()` to get at the `ct` columns!
+
+Here's the whole process, with lots of comments:
+
+```{r}
+example |>
+  mutate(
+    across(
+      # Work across all the columns that start with "pct"
+      starts_with("pct"),
+      # Run this function on each of those columns
+      \(x) {
+        # Do some regular expression work to extract the number from the *name* 
+        # of the current column. So if it's currently doing `pct1`, 
+        # `col_num` should be 1
+        col_num <- str_extract(cur_column(), "\\d+")
+
+        # Extract the `ct*` column from the data
+        ct_values <- pick(everything()) |> pull(paste0("ct", col_num))
+
+        # If x (the pct* column) is missing, use ct* / total, otherwise use pct*
+        ifelse(is.na(x), ct_values / total, x)
+      }
+    )
+  )
+```
+
+The magic trick for this is `pick(everything())`. You can access the whole tibble from inside the function that you're iterating across with `across()`. That's so cool.
+
+### Programmatically with lots of pivoting
+
+Another approach to this is to reshape the data a bunch. Technically the `example` data here violates [tidy data principles](https://r4ds.hadley.nz/data-tidy.html):
+
+1. Each variable is a column; each column is a variable.
+2. Each observation is a row; each row is an observation.
+3. Each value is a cell; each cell is a single value.
+
+It's not tidy because of the `1`, `2`, and `3` embedded in the column names:
+
+```{r}
+example
+```
+
+The tidy version of this would have a column for `ct` and a column for `pt`, with rows for 1, 2, and 3, like this:
+
+```{r}
+#| echo: false
+example |> 
+  pivot_longer(c(starts_with("ct"), starts_with("pct"))) |> 
+  separate_wider_regex(name, c(var_type = ".*?", pair = "\\d+")) |> 
+  pivot_wider(names_from = "var_type", values_from = "value")
+```
+
+Wrangling the original `example` data into this longer format is a little tricky, but it's a neat, useful process. Here it is step-by-step.
+
+First we can pivot the `ct*` and `pct*` columns longer:
+
+```{r}
+example |> 
+  # Pivot the ct* and pct* columns
+  pivot_longer(c(starts_with("ct"), starts_with("pct")))
+```
+
+The value of each count and percent is stored in `value`, and that's all fine and good. The `name` column, though, contains two pieces of information: the type of variable (count or percent) and the pair number (1, 2, and 3). We need to split or separate that column into two different ones.
+
+{tidyr} has three neat functions for doing this:
+
+- `separate_wider_delim()`: Split a column based on a delimiter character like _ or - or a space or whatever. This would be useful if the `name` column was like `ct_1` and `pct_2`.
+- `separate_wider_position()`: Split a column based on counts of characters, like if the first four characters were one column and the last four were another. This would be useful if you were working with something with values like `year1999` and `year2025`.
+- `separate_wider_regex()`: Split a column based on regular expressions. We'll use that here by searching for all text up until a number, then searching for the number.
+
+```{r}
+example |> 
+  # Pivot the ct* and pct* columns
+  pivot_longer(c(starts_with("ct"), starts_with("pct"))) |> 
+  # Split the name column into two: one named "var_type" that is all the 
+  # characters (.*?) up until any number of digits (\d+) at the end of the 
+  # string ($), or \d+$, which is saved as "pair"
+  separate_wider_regex(name, c(var_type = ".*?", pair = "\\d+$"))
+```
+
+Now that we have the pair number split out, we can pivot this wider to get tidy standalone columns for `ct` and `pct`:
+
+```{r}
+example_tidy <- example |> 
+  # Pivot the ct* and pct* columns
+  pivot_longer(c(starts_with("ct"), starts_with("pct"))) |> 
+  # Split the name column into two: one named "var_type" that is all the 
+  # characters (.*?) up until any number of digits (\d+) at the end of the 
+  # string ($), or \d+$, which is saved as "pair"
+  separate_wider_regex(name, c(var_type = ".*?", pair = "\\d+$")) |> 
+  # Create new columns from all the unique values in "var_type" and "value"
+  pivot_wider(names_from = "var_type", values_from = "value")
+example_tidy
+```
+
+Phew. That was a lot of work, but it makes life a lot easier because we don't need to worry about `across()` and column-wise iteration. Instead, we can group by `pair` (so we look at all the `pct1` & `ct1` rows, then all the `pct2` and `ct2` rows, and so on), and do our standard conditional data cleaning—if `pct` is missing, calculate it, otherwise use the existing `pct`:
+
+```{r}
+example_tidy |> 
+  group_by(pair) |> 
+  mutate(pct = ifelse(is.na(pct), ct / total, pct))
+```
+
+In many cases, it's probably okay to leave the data long like this—for instance, it makes it easier to plot in ggplot (you could use `color = pair` or something). But if we want this clean data to look like the original data, we can pivot it wider one last time:
+
+```{r}
+example_tidy |> 
+  group_by(pair) |> 
+  mutate(pct = ifelse(is.na(pct), ct / total, pct)) |> 
+  # Take the ct and pct columns and spread them into ct1, ct2, ct3, pct1, pct2, and pct3
+  pivot_wider(names_from = "pair", values_from = c("ct", "pct"), names_sep = "")
+```
+
+### All three compared
+
+Here's the whole process each of the three methods
+
+::: {.panel-tabset}
+#### Manually
+
+```{r}
+example |> 
+  mutate(
+    pct1 = ifelse(is.na(pct1), ct1 / total, pct1),
+    pct2 = ifelse(is.na(pct2), ct2 / total, pct2),
+    pct3 = ifelse(is.na(pct3), ct3 / total, pct3)
+  )
+```
+
+#### `across()`
+
+```{r}
+example |>
+  mutate(
+    across(
+      starts_with("pct"),
+      \(x) {
+        col_num <- str_extract(cur_column(), "\\d+")
+
+        ct_values <- pick(everything()) |> pull(paste0("ct", col_num))
+
+        ifelse(is.na(x), ct_values / total, x)
+      }
+    )
+  )
+```
+
+#### Pivoting
+
+```{r}
+example |> 
+  pivot_longer(c(starts_with("ct"), starts_with("pct"))) |> 
+  separate_wider_regex(name, c(var_type = ".*?", pair = "\\d+$")) |> 
+  pivot_wider(names_from = "var_type", values_from = "value") |> 
+  group_by(pair) |> 
+  mutate(pct = ifelse(is.na(pct), ct / total, pct)) |> 
+  pivot_wider(names_from = "pair", values_from = c("ct", "pct"), names_sep = "") |> 
+  # This is optional---it just moves the total column to the end so the columns 
+  # here are in the same order as the manual and across() approaches
+  select(starts_with("ct"), starts_with("pct"), total)
+```
+
+:::
