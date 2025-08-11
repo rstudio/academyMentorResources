@@ -1,0 +1,72 @@
+---
+title: "Parameterized Report"
+author: "Jonathan Pedroza (JP)"
+format: html
+execute:
+  enabled: true
+editor_options: 
+  chunk_output_type: inline
+---
+
+```{python}
+import pandas as pd
+from matplotlib import rcParams
+from IPython.display import display, Markdown
+from great_tables import GT
+import plotly.express as px
+
+pd.set_option('display.max_columns', None)
+pd.set_option('mode.copy_on_write', True)
+rcParams.update({'savefig.bbox': 'tight'})
+```
+
+
+```{python}
+#| tags: [parameters]
+
+state_name = 'Oregon'
+```
+
+```{python}
+#| include: false
+
+covid = pd.read_csv('data/covid.csv')
+state_df = pd.read_csv('https://raw.githubusercontent.com/jasonong/List-of-US-States/refs/heads/master/states.csv')
+
+covid.head()
+state_df.head()
+```
+
+```{python}
+covid[['year', 'month', 'day']] = covid['date'].str.split('-', expand = True)
+
+state_yr_avg = covid.groupby(['state', 'year'])[['tests', 'cases', 'hospitalizations', 'deaths']].mean().reset_index()
+```
+
+```{python}
+state_df = state_df.rename(columns = {'State': 'state_name', 'Abbreviation': 'state'})
+
+data = state_yr_avg.merge(state_df, on = 'state')
+```
+
+```{python}
+data = data.loc[data['state_name'] == state_name]
+```
+
+```{python}
+#| echo: false
+
+display(Markdown(f"""
+## {state_name} Tests, Cases, Hospitalizations, & Deaths During the Pandemic
+"""))
+```
+
+```{python}
+GT(data.drop(columns = 'state_name'))
+```
+
+```{python}
+data_long = data.melt(id_vars = ['state', 'year'], value_vars = ['tests', 'cases', 'hospitalizations', 'deaths'])
+
+px.bar(data_long, x = 'variable', y = 'value', color = 'year', barmode = 'group')
+```

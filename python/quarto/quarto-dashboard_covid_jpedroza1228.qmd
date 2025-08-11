@@ -1,0 +1,100 @@
+---
+title: "Covid Dashboard"
+author: "Jonathan Pedroza (JP)"
+format: dashboard
+---
+
+```{python}
+import pandas as pd
+from matplotlib import rcParams
+from IPython.display import display, Markdown
+from great_tables import GT
+import plotly.express as px
+
+pd.set_option('display.max_columns', None)
+pd.set_option('mode.copy_on_write', True)
+rcParams.update({'savefig.bbox': 'tight'})
+```
+
+
+```{python}
+covid = pd.read_csv('data/covid.csv')
+
+covid.head()
+
+covid = covid.rename(columns = {'hospitalizations': 'hosp'})
+
+us_states_geojson = "https://raw.githubusercontent.com/PublicaMundi/MappingAPI/master/data/geojson/us-states.json"
+
+us_states_geojson
+
+covid['year'] = pd.to_datetime(covid['date']).dt.year
+
+state_avg = covid.groupby(['year', 'state'])['deaths'].mean().reset_index().round(2)
+```
+
+# Average Deaths & Associations
+
+## Row {height=60%}
+
+```{python}
+#| title: Deaths In US States in 2020
+
+px.choropleth(
+  state_avg.loc[(state_avg['year'] == 2020)],
+  geojson = us_states_geojson,
+  color = state_avg.loc[(state_avg['year'] == 2020), 'deaths'],
+  locations = 'state',
+  locationmode = 'USA-states',
+  scope = 'usa'
+)
+```
+
+```{python}
+#| title: Deaths In US States in 2021
+
+px.choropleth(
+  state_avg.loc[(state_avg['year'] == 2021)],
+  geojson = us_states_geojson,
+  color = state_avg.loc[(state_avg['year'] == 2021), 'deaths'],
+  locations = 'state',
+  locationmode = 'USA-states',
+  scope = 'usa'
+)
+```
+
+## Row {height=40%}
+
+### Column {.tabset}
+
+```{python}
+#| title: Associations Between Tests & Deaths
+
+test_death = px.scatter(covid, x = 'tests', y = 'deaths', color = 'state', template = 'plotly_white')
+test_death.update_layout(showlegend = False)
+```
+
+```{python}
+#| title: Associations Between Cases & Deaths
+
+case_death = px.scatter(covid, x = 'cases', y = 'deaths', color = 'state', template = 'plotly_white')
+case_death.update_layout(showlegend = False)
+```
+
+```{python}
+#| title: Associations Between Hospitalizations & Deaths
+
+hosp_death = px.scatter(covid, x = 'hosp', y = 'deaths', color = 'state', template = 'plotly_white')
+hosp_death.update_layout(showlegend = False)
+```
+
+# Deaths Trend
+
+## Row 
+
+```{python}
+#| title: Deaths Across Time
+
+state_death_time = px.line(covid, x = 'date', y = 'deaths', color = 'state', template = 'plotly_white')
+state_death_time.update_layout(showlegend = False)
+```
