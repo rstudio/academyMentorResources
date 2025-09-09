@@ -1,0 +1,164 @@
+---
+title: "Week 1: Functions and workflows"
+author: "Andrew Heiss"
+date: "2025-09-09"
+---
+
+## General resources on workflows
+
+- [Jenny Bryan's original work on project-based workflows](https://www.tidyverse.org/blog/2017/12/workflow-vs-script/)
+- [*R for Data Science*'s chapter on projects and workflows](https://r4ds.hadley.nz/workflow-scripts.html)
+
+Keep your environment panel ephemeral! Don't save workspaces. Make sure you use these settings in RStudio (find them at Tools > Global Options)
+
+![Don't save your workspace!](img/no-rdata.png)
+
+## Try Positron
+
+If you would prefer to work in [Positron](https://posit.co/products/ide/positron/) instead of RStudio, you can complete this milestone in a Positron session inside of Posit Workbench. To do this, you will need to:
+
+1. Log in to [dev.academy.posit.team](https://dev.academy.posit.team/) (see instructions [here](https://posit-academy.quarto.pub/support/positron/login.html)).
+
+2. Set up your Academy project in Positron if you haven’t done so already (see instructions [here](https://posit-academy.quarto.pub/support/positron/set-up-project.html)). **You'll need to use this GitHub URL: [`https://github.com/rstudio/academy-pinr-census`](https://github.com/rstudio/academy-pinr-census)**
+
+Each milestone will require you to read and edit a Quarto document inside Positron. To learn how to use Positron and Quarto, see [here](https://posit-academy.quarto.pub/support/positron/positron-basics.html).
+
+
+## Starting with the milestone
+
+### Make sure the code works with one year
+
+```{.r}
+library(tidyverse)
+
+one_year_raw <- read_csv("data/acs-2019.csv")
+
+one_year_clean <- one_year_raw |>
+  mutate(
+    across(
+      c(owner_occupied, renter_occupied, gas_heat),
+      ~ . / occupied_housing
+    )
+  )
+
+one_year_clean
+```
+
+### Stick that working code into a function
+
+```{.r}
+read_year <- function(dataset) {
+  one_year_raw <- read_csv(dataset)
+
+  one_year_clean <- one_year_raw |>
+    mutate(
+      across(
+        c(owner_occupied, renter_occupied, gas_heat),
+        ~ . / occupied_housing
+      )
+    )
+}
+
+read_year("data/acs-2019.csv")
+```
+
+### Anonymous functions
+
+In those examples up there ↑, the *anonymous* function `~ . / occupied_housing` calculates the percent. This is a shortcut way to create a nameless (hence "anonymous") temporary function, and it's roughly the same as writing this:
+
+```{.r}
+quick_temporary_function <- function(x) {
+  x / occupied_housing
+}
+```
+
+The `~` stands for `function() {}`, and the `.` stands for the argument getting passed.
+
+There's also a newer way of writing these anonymous functions with lambda notation (some computer science term referring to the Greek letter $\lambda$). Some R people call it the "Waving hand" notation because it looks like a little waving guy: `\()`
+
+```{.r}
+\(x) x / occupied_housing
+```
+
+Here's what it looks like in `mutate()`:
+
+```{.r}
+one_year_clean <- one_year_raw |>
+  mutate(
+    across(
+      c(owner_occupied, renter_occupied, gas_heat),
+      \(x) x / occupied_housing
+    )
+  )
+```
+
+I like this lambda notation because you can have any number of arguments (the `~ .` notation only lets you use one argument), like this:
+
+```{.r}
+\(x, y, z) (x + y) / z
+```
+
+### Scope issues
+
+This is all important because functions can only see objects that you pass into them—they can't typically see outside into the rest of the {dplyr} chain.
+
+Like, if you want to make the percentage calulating function named and not anonymous, like this:
+
+```{.r}
+pct <- function(col) {
+  col / occupied_housing
+}
+```
+
+…that *feels* like it should work, but it won't!
+
+```{.r}
+one_year_clean <- one_year_raw |>
+  mutate(
+    across(
+      c(owner_occupied, renter_occupied, gas_heat),
+      ~ pct(.)
+    )
+  )
+
+#> Error in `mutate()`:
+#> ℹ In argument: `across(c(owner_occupied, renter_occupied, gas_heat), ~pct(.))`.
+#> Caused by error in `across()`:
+#> ! Can't compute column `owner_occupied`.
+#> Caused by error in `pct()`:
+#> ! object 'occupied_housing' not found
+```
+
+It can't see the `occupied_housing` column because it lives in the dataset, and the full dataset wasn't passed to the `pct()` function, so things break.
+
+If you want to make the percent calculating function a separate thing, one easy solution is to also pass the denominator column:
+
+```{.r}
+pct <- function(col, denom) {
+  col / denom
+}
+```
+
+Then when you use it, you can pass both the current column in `across()` and the denominator `occupied_housing`:
+
+```{.r}
+one_year_clean <- one_year_raw |>
+  mutate(
+    across(
+      c(owner_occupied, renter_occupied, gas_heat),
+      ~ pct(., occupied_housing)
+    )
+  )
+```
+
+You can use lambda/waving notation too:
+
+```{.r}
+one_year_clean <- one_year_raw |>
+  mutate(
+    across(
+      c(owner_occupied, renter_occupied, gas_heat),
+      \(x, denom) pct(x, occupied_housing)
+    )
+  )
+```
