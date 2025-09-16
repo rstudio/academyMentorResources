@@ -1,0 +1,190 @@
+---
+title: "Week 2: Control function flow"
+author: "Andrew Heiss"
+date: "2025-09-16"
+---
+
+## Resources
+
+- [Working with list columns](https://r4ds.had.co.nz/many-models.html)
+- [Mini real life example of using list columns and `map()`](https://stats.andrewheiss.com/lemon-lucifer/analysis/model-details.html)
+
+## Vectors and lists
+
+```{r}
+# Different ways to make vectors
+x <- c(1, 2, 3, 4, 5)
+x <- 1:5
+x <- seq(1, 5, by = 1)
+x <- seq(1, 5, by = 0.1)
+
+# All items in a vector have to be the same type
+# Adding a character "3" forces R to make all the other elements characters
+x <- c(1, 2, "3", 4, 5)
+x
+
+# ... which means you can't do math with it anymore
+mean(x)
+
+# You can name slots in a vector if you want
+x <- c(first = 1, second = 2, red = 3, 4, 5)
+x
+
+# And you can access elements by name
+x["second"]
+# or by position
+x[[2]]
+
+
+# Lists are collections of things, and list elements can be any type and any length
+z <- list(1:5, "A")
+z
+
+# List elements can be named and you can reference them by name. 
+# You can also put lists inside of lists!
+z <- list(numbers = 1:5, letter = "A", another_list = list(blah = 1:3))
+z$numbers
+z$letter
+z$another_list$blah
+
+
+# Most R objects are secretly just lists with lots of different slots
+model <- lm(mpg ~ cyl, data = mtcars)
+
+model$coefficients
+model$residuals
+
+# You can access deeply nested list elements too, by name...
+model$qr$qr
+# ...or by position...
+model[[7]][[1]]
+```
+
+## Output of `map()`
+
+`map()` will always return a list, even if you use it to iterate across a vector. For example, if you have a vector of numbers like `x` here:
+
+```{r}
+x <- 1:5
+x
+```
+
+…and you use `map()` to run a function across each element, like this:
+
+```{r}
+library(purrr)
+
+map(x, \(item) item / 2)
+```
+
+…you get a list, with individual numbers in each slot (see how `[[1]]` contains 0.5, `[[2]]` contains 1, and so on).
+
+If you want `map()` to return something that's not a list, like a numeric vector, you can use one of the many `map_*` variants, like `map_lgl()` (for logical, or true/false things), `map_chr()` (for characters), `map_int()` (for integers), or `map_dbl()` (for doubles, or numeric):
+
+```{r}
+map_dbl(x, \(item) item / 2)
+```
+
+
+## List columns
+
+Data frames can contain list columns, which is a super fun and cool feature because you can keep deeply nested lists all together in one place and iterate through them.
+
+Here is a data frame with three rows, with a column named "data" that contains a complete subset of the `mtcars` data:
+
+```{r}
+#| warning: false
+#| message: false
+
+library(tidyverse)
+library(broom)  # For extracting stuff from model objects
+
+zxcv <- mtcars |> 
+  group_by(cyl) |> 
+  nest()
+zxcv
+```
+
+We can then run different functions on that new `data` column. Like here, for fun, I make a scatterplot for each, and run `lm()` on each and extract pieces of that model object. 
+
+The `scatterplot` column contains three ggplot objects; the `model` column contains the three regression models; and the `coef_thing` column contains the coefficient for `disp`
+
+```{r}
+zxcv <- mtcars |> 
+  group_by(cyl) |> 
+  nest() |> 
+  mutate(scatterplot = map2(data, cyl, \(.df, .cyl) {
+    ggplot(.df, aes(x = disp, y = mpg)) + 
+      geom_point() +
+      labs(title = paste0(.cyl, " cylinders"))
+  })) |> 
+  mutate(model = map(data, \(.df) lm(mpg ~ disp, data = .df))) |> 
+  mutate(coef_thing = map_dbl(model, \(.x) .x$coefficients[[2]]))
+zxcv
+```
+
+↑ That's the same as doing this, but these are all separate objects that you now have to keep track of:
+
+```{r}
+thing1 <- lm(mpg ~ disp, data = filter(mtcars, cyl == 6))
+thing1$coefficients[[2]]
+thing2 <- lm(mpg ~ disp, data = filter(mtcars, cyl == 4))
+thing2$coefficients[[2]]
+thing3 <- lm(mpg ~ disp, data = filter(mtcars, cyl == 8))
+thing3$coefficients[[2]]
+```
+
+You can access those individual plots with `[[` notation, like this:
+
+```{r}
+zxcv$scatterplot[[1]]
+```
+
+Or, since that `$scatterplot` column is a list, you can use `patchwork::wrap_plots()` to combine a list of plots into one single plot:
+
+```{r}
+#| fig-width: 8
+#| fig-height: 3
+#| column: page
+#| out-width: 100%
+#| fig-align: center
+library(patchwork)
+
+wrap_plots(zxcv$scatterplot, nrow = 1)
+```
+
+You can use `unnest()` to convert a list column back to a regular long data frame:
+
+```{r}
+qwer <- mtcars |> 
+  group_by(cyl) |> 
+  nest() |> 
+  mutate(model = map(data, \(.df) lm(mpg ~ disp, data = .df))) |> 
+  mutate(coefs = map(model, \(x) tidy(x, conf.int = TRUE))) |> 
+  unnest(coefs)
+qwer
+```
+
+And then you can filter it and mutate it and plot it and do whatever other normal data manipulation stuff you want:
+
+```{r}
+qwer |> 
+  filter(term == "disp") |> 
+  ggplot(aes(x = estimate, y = factor(cyl))) + 
+  geom_pointrange(aes(xmin = conf.low, xmax = conf.high)) +
+  labs(title = "Coefficient for disp across cylinders")
+```
+
+## Milestone start
+
+```{{r}}
+data |>
+  select(division, where(is.numeric), -year) |>
+  pivot_longer(-division) |>
+  filter(name == var) |>
+  group_by(division, name) |>
+  summarize(value = sum(value, na.rm = TRUE)) |>
+  ungroup() |>
+  arrange(desc(value)) |>
+  pivot_wider()
+```
