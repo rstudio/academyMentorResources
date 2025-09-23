@@ -1,0 +1,253 @@
+---
+title: "Week 3: Write functions with the tidyverse"
+author: "Andrew Heiss"
+date: "2025-09-23"
+---
+
+```{r}
+#| include: false
+options(width = 300)
+```
+
+## List columns
+
+```{r}
+#| warning: false
+#| message: false
+
+library(tidyverse)
+library(palmerpenguins)
+library(broom)
+
+penguins <- penguins |> drop_na(sex)
+```
+
+List columns can contain any kind of variable, like whole data frames. Here, the `data` column contains three datasets: all the rows of the `penguins` data for each of the three species.
+
+```{r}
+penguins |> 
+  group_by(species) |> 
+  nest()
+```
+
+We can feed that list column to `map()` and make new columns. Like here's the same linear regression model fit to each of the three datasets:
+
+```{r}
+penguins |>
+  group_by(species) |>
+  nest() |>
+  mutate(model = map(data, \(x) lm(body_mass_g ~ flipper_length_mm, data = x)))
+```
+
+We can work with that list of `lm` objects too, like feeding them through `tidy()` to create a data frame of model results:
+
+```{r}
+penguins |>
+  group_by(species) |>
+  nest() |>
+  mutate(
+    model = map(data, \(x) lm(body_mass_g ~ flipper_length_mm, data = x))
+  ) |>
+  mutate(results = map(model, \(x) tidy(x, conf.int = TRUE)))
+```
+
+If we unnest that `results` column we'll get a long data frame with one row for each of the rows in the data:
+
+```{r}
+penguins |>
+  group_by(species) |>
+  nest() |>
+  mutate(
+    model = map(data, \(x) lm(body_mass_g ~ flipper_length_mm, data = x))
+  ) |>
+  mutate(results = map(model, \(x) tidy(x, conf.int = TRUE))) |>
+  unnest(results)
+```
+
+## Special `map()` variants
+
+We can also extract values from the nested `results` data frames, like finding the flipper length coefficients for each species:
+
+```{r}
+penguins |>
+  group_by(species) |>
+  nest() |>
+  mutate(
+    model = map(data, \(x) lm(body_mass_g ~ flipper_length_mm, data = x))
+  ) |>
+  mutate(results = map(model, \(x) tidy(x, conf.int = TRUE))) |>
+  mutate(
+    flipper_coef = map(
+      results,
+      \(x) x |> filter(term == "flipper_length_mm") |> pull(estimate)
+    )
+  )
+```
+
+This new `flipper_coef` column contains single numbers, but they're weirdly wrapped up inside a list. Since each list element only contains one item, and that one item is a number, we can use `map_dbl()` instead of `map()` to tell R that the output really is just a number:
+
+```{r}
+penguins |>
+  group_by(species) |>
+  nest() |>
+  mutate(
+    model = map(data, \(x) lm(body_mass_g ~ flipper_length_mm, data = x))
+  ) |>
+  mutate(results = map(model, \(x) tidy(x, conf.int = TRUE))) |>
+  mutate(
+    flipper_coef = map_dbl(
+      results,
+      \(x) x |> filter(term == "flipper_length_mm") |> pull(estimate)
+    )
+  )
+```
+
+Now that `flipper_coef` column is an actual number.
+
+These special `map()` variants only work when the results of the mapped function are of length 1. For instance, here we'll pull out both values from the `estimate` column by not filtering it beforehand:
+
+```{r}
+penguins |>
+  group_by(species) |>
+  nest() |>
+  mutate(
+    model = map(data, \(x) lm(body_mass_g ~ flipper_length_mm, data = x))
+  ) |>
+  mutate(results = map(model, \(x) tidy(x, conf.int = TRUE))) |>
+  mutate(
+    coefs = map(
+      results,
+      \(x) x |> pull(estimate)
+    )
+  )
+```
+
+That returns a vector of two numbers for each row (or `<dbl [2]>`). If we use `map_dbl()`, we'll get an error:
+
+```{r}
+#| error: true
+penguins |>
+  group_by(species) |>
+  nest() |>
+  mutate(
+    model = map(data, \(x) lm(body_mass_g ~ flipper_length_mm, data = x))
+  ) |>
+  mutate(results = map(model, \(x) tidy(x, conf.int = TRUE))) |>
+  mutate(
+    coefs = map_dbl(
+      results,
+      \(x) x |> pull(estimate)
+    )
+  )
+```
+
+We can use `map_chr()` and `map_lgl()` to do the same thing for character and logical (TRUE/FALSE) values:
+
+```{r}
+penguins |>
+  group_by(species) |>
+  nest() |>
+  mutate(
+    model = map(data, \(x) lm(body_mass_g ~ flipper_length_mm, data = x))
+  ) |>
+  mutate(results = map(model, \(x) tidy(x, conf.int = TRUE))) |>
+  mutate(
+    flipper_coef = map_dbl(
+      results,
+      \(x) x |> filter(term == "flipper_length_mm") |> pull(estimate)
+    ),
+    coef_name = map_chr(
+      results,
+      \(x) x |> filter(term == "flipper_length_mm") |> pull(term)
+    ),
+    has_two_rows = map_lgl(results, \(x) nrow(x) == 2)
+  )
+```
+
+::: {.callout-tip}
+
+### Use `map()` first!
+
+I always mess up when using `map_*()` the first time—like, I'll try it when a function returns a vector or a data frame or something else instead of a single value. 
+
+My strategy is to always use `map()` first. If I then see that it's returning a nested list of one-element things (like `<dbl [1]>` or `<int [1]>` or `<chr [1]>` or `<lgl [1]>`), then I'll change it to the corresponding special map (like `map_dbl()`, `map_int()`, `map_chr()`, or `map_lgl()`).
+
+:::
+
+
+## Milestone start + embracing and variable substitution
+
+In the milestone, you'll create a function that takes unquoted variable names. You'll need to protect those using the `{{}}` ("embrace") [tidy eval operator](https://ggplot2.tidyverse.org/reference/tidyeval.html). This replaces the value of `.var` inside `pull()` and `ggplot()` and other functions:
+
+```{r}
+plot_var_by <- function(.data, .var = hwy, .by = class) {
+  column_to_plot <- .data |> 
+    pull({{.var}})
+
+  if (is.numeric(column_to_plot)) {
+    .data |>
+      mutate({{.by}} := fct_reorder({{.by}}, {{.var}})) |>
+      ggplot(aes(x = {{.var}}, y = {{.by}})) +
+      geom_boxplot()
+  } else {
+    # DO OTHER STUFF
+  }
+}
+
+plot_var_by(mpg, .var = hwy)
+
+# Or with pipes
+mpg |> 
+  plot_var_by(hwy)
+```
+
+The base R equivalent of this *feels* like this, but **this does not work**. The `{{}}` operator only works inside tidy-enabled functions like all the {dplyr}, {tidyr}, and {ggplot2} functions.
+
+```{r}
+#| eval: false
+plot_var_by <- function(.data, .var = hwy, .by = class) {
+  is.numeric(.data${{.var}})
+}
+```
+
+If you really want, you can do this unquoted variable substitution process with base R's `substitute()` and `eval()`:
+
+```{r}
+plot_var_by <- function(.data, .var) {
+  # Base R's way of doing the embracing thing
+  #
+  # substitute() takes the value of the function argument `var` and replaces it 
+  # with whatever is passed, and then `eval()` evaluates it and extracts it 
+  # from `.data`
+  column_to_plot <- eval(substitute(.var), .data)
+
+  is.numeric(column_to_plot)
+}
+
+plot_var_by(mpg, hwy)
+
+mpg |> 
+  plot_var_by(hwy)
+```
+
+That `eval(substitute(...))` stuff is gross and complex, hence the invention of `{{}}`
+
+## Walruses
+
+To use an embraced variable name as the name for a variable in `mutate()` or `summarize()`, you need to use the walrus operator, or `:=`. That's because, according to the [tidy eval documentation](https://ggplot2.tidyverse.org/reference/tidyeval.html):
+
+> For technical reasons, the R language doesn't support complex expressions on the left of `=`, so we use `:=` as a workaround.
+
+```{r}
+find_median <- function(.data, .var = hwy) {
+  .data |> 
+    summarize(
+      {{.var}} := median({{.var}}),
+      # You can use {{}} things in quotes too:
+      "{{.var}}_median" := median({{.var}})
+    )
+}
+
+mpg |> 
+  find_median(cty)
+```
