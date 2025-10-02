@@ -1,0 +1,136 @@
+---
+title: "Week 4: Iterate with for loops"
+author: "Andrew Heiss"
+date: "2025-09-23"
+---
+
+```{r}
+#| include: false
+options(width = 300)
+set.seed(1234)
+```
+
+## `map2()` and `pmap()`
+
+You've already seen how to use `map()` to iterate across a vector or list with some function. Like, here's a standard basic example of `map()` (or technically `map_dbl()` since the function returns a number):
+
+```{r}
+#| warning: false
+#| message: false
+
+library(tidyverse)
+
+add_one <- function(value) {
+  value + 1
+}
+
+some_numbers <- c(1, 6, 3, 7)
+
+# With the anonymized \() lambda notation
+# You could also do map_dbl(some_numbers, add_one), but I like to be 
+# explicit about arguments
+map_dbl(some_numbers, \(x) add_one(value = x))
+```
+
+`map2()` works like regular `map()`, but it iterates across two different vectors or lists at the same time. Here it will work through both `some_numbers` and `some_other_numbers` and add them together:
+
+```{r}
+add_two_numbers <- function(thing1, thing2) {
+  thing1 + thing2
+}
+
+some_numbers <- c(1, 6, 3, 7)
+some_other_numbers <- c(2, 1, 3, 4)
+
+map2_dbl(
+  some_numbers,
+  some_other_numbers,
+  \(x, y) add_two_numbers(thing1 = x, thing2 = y)
+)
+
+# Or, less verbosely:
+map2_dbl(some_numbers, some_other_numbers, add_two_numbers)
+```
+
+In practice, I actually rarely use `map2()` because it's limited to only two inputs. If you potentially could use 3 inputs, you'd need to use `pmap()`, which is for any number of inputs:
+
+- `map()`: iterate over **one** vector/list
+- `map2()`: iterate over **two** vectors/lists
+- `pmap()`: iterate over **a list of any number** of vectors/lists
+
+Here's the `pmap()` version of that `map2()` example:
+
+```{r}
+pmap_dbl(
+  list(
+    some_numbers,
+    some_other_numbers
+  ),
+  \(x, y) add_two_numbers(thing1 = x, thing2 = y)
+)
+
+# Or, less verbosely:
+pmap_dbl(list(some_numbers, some_other_numbers), add_two_numbers)
+```
+
+Even if I'm only iterating across two things, I'll typically use `pmap()` just in case it ever needs to be expanded.
+
+## Another example of `map2()` vs `pmap()`
+
+Here's that same example with the `mean_sales` and `sd_sales` from the lesson this week:
+
+```{r}
+mean_sales = c(
+  dairy = 5364.5846,
+  meat = 5059.6955,
+  fish = 764.4324,
+  deli = 1744.4206,
+  cheese = 364.5226
+)
+
+sd_sales <- c(
+  dairy = 1192.3751,
+  meat = 1560.7741,
+  fish = 333.7008,
+  deli = 509.8426,
+  cheese = 127.2061
+)
+```
+
+Here's the `map2()` version:
+
+```{r}
+map2(
+  mean_sales, sd_sales, 
+  \(.mean, .sd) rnorm(n = 30, mean = .mean, sd = .sd)
+)
+```
+
+And here's the `pmap()` version:
+
+```{r}
+pmap(
+  list(.mean = mean_sales, .sd = sd_sales),
+  \(.mean, .sd) rnorm(n = 30, mean = .mean, sd = .sd)
+)
+```
+
+Now that it's happening with `pmap()`, we can iterate across any number of additional arguments by adding them to the list:
+
+```{r}
+library(patchwork)
+
+simulation_plots <- pmap(
+  list(.mean = mean_sales, .sd = sd_sales, .var_name = names(mean_sales)),
+  \(.mean, .sd, .var_name) {
+    sim_results = tibble(x = rnorm(n = 30, mean = .mean, sd = .sd))
+
+    ggplot(sim_results, aes(x = x)) +
+      geom_density(fill = "grey50", color = NA) +
+      labs(title = .var_name) +
+      theme(axis.text.y = element_blank(), axis.ticks.y = element_blank())
+  }
+)
+
+wrap_plots(simulation_plots)
+```
