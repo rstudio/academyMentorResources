@@ -134,3 +134,12 @@ simulation_plots <- pmap(
 
 wrap_plots(simulation_plots)
 ```
+
+## Extra resources
+
+- [{patchwork} for combining ggplot plots](https://patchwork.data-imaginist.com/)
+- New `join_by()` function: [this Posit blog post](https://www.tidyverse.org/blog/2023/01/dplyr-1-1-0-joins/) and [this chapter in R for Data Science](https://r4ds.hadley.nz/joins.html)
+- [tidyexplain joining animations](https://www.garrickadenbuie.com/project/tidyexplain/)
+- ggplot theme cheatsheets: [this one](https://github.com/claragranell/ggplot2/blob/main/ggplot_theme_system_cheatsheet.pdf) and [this one](https://henrywang.nl/ggplot2-theme-elements-demonstration/)
+- {scales} and automatic axis formatting: [this Posit blog post](https://www.tidyverse.org/blog/2022/04/scales-1-2-0/) and [this little tutorial by me](https://datavizsp25.classes.andrewheiss.com/news/2025-03-31_faqs_weeks-09-10.html#i-have-numbers-like-20000-and-want-them-formatted-with-commas-like-20000.-can-i-do-that-automatically)
+- [How to deal with long labels in plots](https://www.andrewheiss.com/blog/2022/06/23/long-labels-ggplot/)
