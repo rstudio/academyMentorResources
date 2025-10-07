@@ -1,0 +1,174 @@
+---
+title: "Week 5: Function-writing best practices"
+author: "Andrew Heiss"
+date: "2025-10-07"
+---
+
+## Code style
+
+The [tidyverse style guide](https://style.tidyverse.org/) is a great resource to follow for good consistent code.
+
+Check out the [new Air formatter](https://posit-dev.github.io/air/) to automatically reformat your code to adhere to the tidyverse style guide (or configure it to follow whatever style conventions you like).
+
+Here are the instructions for getting it working with [RStudio](https://posit-dev.github.io/air/editor-rstudio.html). It's pre-installed with Positron—here are [instructions for configuring it](https://posit-dev.github.io/air/editor-vscode.html).
+
+## {cli}
+
+The [{cli} package](https://cli.r-lib.org) is fantastic for making nice human-readable errors, warnings, messages!
+
+You can use it in functions:
+
+```{r}
+example <- function(x) {
+  if (x == 5) {
+    cli::cli_abort("Oh no, not 5!")
+  }
+
+  output <- x + 1
+  cli::cli_h1("Example function fun times")
+  cli::cli_alert_success("This works!")
+  cli::cli_alert_info("The result is {output}")
+
+  output
+}
+
+example(4)
+```
+
+```{r}
+#| error: true
+
+example(5)
+```
+
+You can also use it outside of functions. Use it anywhere!
+
+```{r}
+for (i in 1:5) {
+  cli::cli_h1("Running the thing")
+  cli::cli_alert_info("Currently on item {i}")
+  # Sys.sleep(1)
+}
+```
+
+
+## Automatic parallel computing with {furrr}
+
+[The {furrr} package](https://furrr.futureverse.org/) provides parallelized versions of all of {purrr}'s `map_*()` functions so you can run different iterations of a function across multiple CPUs. This can speed long-running processes up substantially!
+
+It's surprisingly easy to use too:
+
+1. Tell R how to handle the multiple processes (multiple CPUs, remote machines on a fancy computing cluster, etc.)
+2. Replace `map()` with `future_map()`
+3. That's all.
+
+First we'll make a goofy long-running function that waits for one second and then adds one to a number:
+
+```{r}
+add_one_and_wait <- function(x) {
+  Sys.sleep(1)
+  x + 1
+}
+
+add_one_and_wait(4)
+```
+
+Next we'll use that function across a vector with four elements in a non-parallel, sequential way. It should take about 4 seconds:
+
+```{r}
+library(purrr)
+
+thing_to_iterate <- 1:4
+
+tictoc::tic()
+thing_to_iterate |> 
+  map(add_one_and_wait)
+tictoc::toc()
+```
+
+If we tell this to run in parallel, though, each one of those `map()` iterations will happen on a different CPU. It should now take ≈1 second to run (it's not exact because it takes a little bit of overhead time to set up the separate workers, but still):
+
+```{r}
+#| message: false
+library(furrr)
+
+# Run this locally with four CPUs, or "workers"
+plan(multisession, workers = 4)
+
+tictoc::tic()
+thing_to_iterate |> 
+  future_map(add_one_and_wait)
+tictoc::toc()
+```
+
+## Milestone start
+
+Initial stuff:
+
+```{.r}
+library(tidyverse)
+source("census_05_best-practices.R")
+
+hearing <- read_csv("data/hearing_difficulty.csv") 
+
+acs <- read_years() 
+```
+
+Add some checks to `plot_over_time()`:
+
+
+```{.r}
+plot_over_time <- function(measure, df = acs, by = sex, facet = region) {
+  if (!is.data.frame(measure)) {
+    cli::cli_abort("`measure` must be a data frame.")
+  }
+
+  if (!is.data.frame(df)) {
+    cli::cli_abort("`df` must be a data frame.")
+  }
+
+  numeric_measures <- measure |>
+    select(-c(year, state, total)) |>
+    map(is.numeric) |>
+    unlist()
+
+  if (
+    !any(str_detect(colnames(measure), "male")) ||
+      !any(str_detect(colnames(measure), " to ")) ||
+      !all(numeric_measures)
+  ) {
+    cli::cli_abort(
+      "`measure` must include numeric variables partitioned by sex and age."
+    )
+  }
+
+  facet_data <- df |>
+    pull({{ facet }})
+
+  if (is.numeric(facet_data)) {
+    cli::cli_abort(
+      "The `facet` column must be {.cls character} or {.cls factor},
+       not {.cls {class(facet_data)}}."
+    )
+  }
+
+  measure_long <-
+    measure |>
+    pivot_longer(cols = -c(year:total)) |>
+    mutate(
+      sex = str_remove_all(name, " .*"),
+      age = fct_inorder(str_remove_all(name, "^[a-z]+ ")),
+      proportion = value / total
+    )
+
+  df |>
+    select(year, where(is.character)) |>
+    left_join(measure_long, by = c("year", "state")) |>
+    group_by(year, state, {{ facet }}, {{ by }}) |>
+    summarize(proportion = sum(proportion)) |>
+    ungroup() |>
+    ggplot(aes(year, proportion, color = {{ by }})) +
+    geom_smooth() +
+    facet_wrap(vars({{ facet }}))
+}
+```
