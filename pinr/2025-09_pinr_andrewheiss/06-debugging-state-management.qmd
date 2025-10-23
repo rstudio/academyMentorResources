@@ -1,0 +1,180 @@
+---
+title: "Week 6: Debugging and state management"
+author: "Andrew Heiss"
+date: "2025-10-21"
+---
+
+## Debugging tips
+
+Here are two really good short resources on debugging:
+
+- [Debugging with the RStudio IDE, § Stopping when a function executes](https://support.posit.co/hc/en-us/articles/205612627-Debugging-with-the-RStudio-IDE#stopping-when-a-function-executes)
+- ["Debugging", *Advanced R*](https://adv-r.hadley.nz/debugging.html#browser)
+
+Here's a basic little function to illustrate:
+
+```{.r}
+blah <- function(x, y) {
+  x + y
+}
+```
+
+`debug()` will tell R to pause the function **every time** `blah()` is executed. RStudio will show you the environment that R can currently see inside the function:
+
+```{.r}
+debug(blah)
+blah(3, 5)
+```
+
+![Debugging environment](img/debug-window.png)
+
+That's neat, but once you move past / unpause the debugging dialog, running `blah()` again will pause everything again. 
+
+`debug()` essentially sets an internal flag within R to say that the `blah()` function should always be paused. The only way to stop that is to disable the flag with `undebug()`:
+
+```{.r}
+undebug(blah)
+```
+
+Remembering to disable the debugging flag is annoying, so R comes with a shortcut called `debugonce()` which will pause the function *just once*. Once you're done, it'll unset the flag and `blah()` will work normally after that:
+
+```{.r}
+debugonce(blah)
+blah(3, 5)
+```
+
+↑ that's basically the same as this:
+
+```{.r}
+debug(blah)
+blah(3, 5)
+undebug(blah)
+```
+
+## Basic parameterized Quarto report example
+
+In this example, we'll use data in a lookup table (that we'll create) to populate values in a Quarto file
+
+### Step 0: Create lookup table
+
+IRL, you'll probably have a dataset of stuff that you want to iterate through (like a row per user or row per company or whatever). For this example we'll make a little table on our own with `tibble::tribble()`, which lets us define dataframes in a row-wise manner (hence the "r" in t**r**ibble).
+
+Run this in your console to make the table:
+
+```{.r}
+library(tidyverse)
+
+lookup <- tribble(
+  ~state, ~abbv, ~region, ~division,
+  "North Carolina", "NC", "South", "South Atlantic",
+  "California", "CA", "West", "Pacific",
+  "Texas", "TX", "South", "West South Central"
+)
+
+write_csv(lookup, "data/lookup.csv")
+```
+
+### Step 1: Make a non-parameterized Quarto file
+
+Before making a parameterized report, we'll make a basic file *without* parameters to make sure everything is working. It loads the lookup table and then inserts different values into the document using [inline chunks](https://quarto.org/docs/computations/inline-code.html)
+
+Here's a basic example:
+
+````{.default filename="example.qmd"}
+---
+title: "Example"
+format: html
+---
+
+```{{r}}
+#| warning: false
+#| message: false
+library(tidyverse)
+
+# Load lookup data
+lookup <- read_csv("data/lookup.csv")
+
+# Extract just California
+state_to_use <- "CA"
+
+current_state <- lookup |>
+  filter(abbv == state_to_use)
+```
+
+# Report for `{{r}} current_state$state`
+
+This state is in the `{{r}} current_state$region` region
+````
+
+### Step 3: Make it parameterized
+
+With that working, we can move `state_to_use` out of the code and into the YAML metadata, which sets up future looping. Change the document to this:
+
+
+````{.default filename="example.qmd"}
+---
+title: "Example"
+format: html
+params:
+  state_to_use: "CA"
+---
+
+```{{r}}
+#| warning: false
+#| message: false
+library(tidyverse)
+
+# Load lookup data
+lookup <- read_csv("data/lookup.csv")
+
+current_state <- lookup |>
+  filter(abbv == params$state_to_use)
+```
+
+# Report for `{{r}} current_state$state`
+
+This state is in the `{{r}} current_state$region` region
+````
+
+### Step 4: Loop through a bunch of states
+
+Cool, that works! You can now change the state abbreviation in the YAML manually, or you can pass parameters through the Quarto command. You can do this in the terminal like this:
+
+```sh
+quarto render example.qmd -P state_to_use:TX --output example_TX.html
+```
+
+Or you can do it from R using the {quarto} package:
+
+```{.r}
+quarto::quarto_render(
+  "example.qmd",
+  execute_params = list(state_to_use = "TX"),
+  output_file = glue::glue("example_TX.html")
+)
+```
+
+That lets us render one file, but we can stick `quarto::quarto_render()` inside a function to loop through a bunch of states:
+
+```{.r}
+render_report <- function(state) {
+  quarto::quarto_render(
+    "example.qmd",
+    execute_params = list(state_to_use = state),
+    output_file = glue::glue("example_{state}.html")
+  )
+}
+```
+
+It works with one state:
+
+```{.r}
+render_report("TX")
+```
+
+Or with multiple states:
+
+```{.r}
+states_to_use <- c("NC", "CA", "TX")
+walk(states_to_use, render_report)
+```
