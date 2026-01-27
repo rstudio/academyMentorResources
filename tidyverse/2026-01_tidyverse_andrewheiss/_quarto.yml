@@ -1,0 +1,19 @@
+project:
+  type: website
+
+website:
+  title: "Tidyverse resources"
+  navbar:
+    background: "#164F86"
+    left:
+      - href: index.qmd
+        text: Home
+  sidebar:
+    contents:
+      - index.qmd
+      - auto: "*.qmd"
+
+format:
+  html:
+    theme: zephyr
+    toc: true

@@ -1,0 +1,4 @@
+- source: project
+  quarto-pub:
+    - id: bb9bb98b-841a-4a87-8850-66e194f93477
+      url: https://andrewheiss.quarto.pub/2026-01_tidyverse

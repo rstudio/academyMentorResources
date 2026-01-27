@@ -1,0 +1,64 @@
+---
+title: "Week 1: Import and visualize"
+author: "Andrew Heiss"
+date: "2026-01-27"
+---
+
+## SAS → R
+
+- [SAS to R recipes](https://posit-academy.quarto.pub/sassy-recipes/)
+
+## Quarto
+
+- [Complete documentation](https://quarto.org/)
+- [Example class website](https://datavizsp26.classes.andrewheiss.com/example/03-example.html)
+- [Example research compendium](https://stats.andrewheiss.com/silent-skywalk/)
+
+## Positron
+
+If you would prefer to work in [Positron](https://positron.posit.co/) instead of RStudio, you can complete this milestone in a Positron session inside of Posit Workbench. To do this, you will need to:
+
+1. Log in to [dev.academy.posit.team](https://dev.academy.posit.team/) (see instructions [here](https://posit-academy.quarto.pub/support/positron/login.html)).
+
+2. Set up your Academy project in Positron if you haven’t done so already (see instructions [here](https://posit-academy.quarto.pub/support/positron/set-up-project.html)). **You'll need to use this GitHub URL: [`https://github.com/rstudio/academy-tidyverse-renal-treatment`](https://github.com/rstudio/academy-tidyverse-renal-treatment)**
+
+Each milestone will require you to read and edit a Quarto document inside Positron. To learn how to use Positron and Quarto, see [here](https://posit-academy.quarto.pub/support/positron/positron-basics.html).
+
+## Milestone start
+
+Lots of different ways to do this. Make a copy of the `mdrd` dataset that's filtered:
+
+```{.r}
+mdrd_no_dropout <- mdrd %>% 
+  filter(dropout == 0)
+
+ggplot(mdrd_no_dropout, aes(x = gfr)) + 
+  geom_histogram(binwidth = 2)
+```
+
+Or filter on-the-fly and pipe it directly to ggplot:
+
+```{.r}
+mdrd %>% 
+  filter(dropout == 0) %>% 
+  ggplot(aes(x = gfr)) + 
+  geom_histogram(binwidth = 2)
+```
+
+Show a plot where `dropout == 1`:
+
+```{.r}
+mdrd %>% 
+  filter(dropout == 1) %>% 
+  ggplot(aes(x = gfr)) + 
+  geom_histogram(binwidth = 2)
+```
+
+Show the distribution of both dropout = 0 and 1
+
+```{.r}
+mdrd %>% 
+  ggplot(aes(x = gfr)) + 
+  geom_histogram(binwidth = 2) +
+  facet_wrap(vars(dropout))
+```
