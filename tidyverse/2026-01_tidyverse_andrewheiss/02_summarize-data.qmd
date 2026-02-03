@@ -1,0 +1,69 @@
+---
+title: "Week 2: Summarize data"
+author: "Andrew Heiss"
+date: "2026-02-03"
+---
+
+## ggplot resources
+
+- [Visualize data with ggplot2](https://aysps.github.io/2024-aysps-dataviz/session_1/slides/04_visualize-data.html) slides
+
+## dplyr resources
+
+- [Transform data with dplyr](https://aysps.github.io/2024-aysps-dataviz/session_1/slides/05_transform-data.html) slides
+- [Visualizing {dplyr}’s mutate(), summarize(), group_by(), and ungroup() with animations](https://www.andrewheiss.com/blog/2024/04/04/group_by-summarize-ungroup-animations/)
+
+## Recreation start
+
+You can do this in a couple different ways. Here's the most compact version, with the full `gfr_slope` calculation happening in one step:
+
+```{.r}
+mdrd %>% 
+  group_by(ptid) %>% 
+  arrange(months) %>% 
+  summarize(gfr_slope = (last(gfr) - first(gfr)) / (last(months) - first(months)))
+
+#> # A tibble: 255 × 2
+#>     ptid gfr_slope
+#>    <dbl>     <dbl>
+#>  1     1    -0.392
+#>  2     2     0.198
+#>  3     3    -0.316
+#>  4     4    -0.494
+#>  5     5    -0.237
+#>  6     6    -0.446
+#>  7     7    -1.21 
+#>  8     8    -0.347
+#>  9     9    -0.147
+#> 10    10    -2.65 
+#> # ℹ 245 more rows
+#> # ℹ Use `print(n = ...)` to see more rows
+```
+
+Or you can add some intermediate steps to see what's going on behind the scenes:
+
+```{.r}
+mdrd %>% 
+  group_by(ptid) %>% 
+  arrange(months) %>% 
+  summarize(
+    gfr_diff = last(gfr) - first(gfr),
+    time_diff = last(months) - first(months)
+  ) %>% 
+  mutate(gfr_slope = gfr_diff / time_diff)
+#> # A tibble: 255 × 4
+#>     ptid gfr_diff time_diff gfr_slope
+#>    <dbl>    <dbl>     <dbl>     <dbl>
+#>  1     1   -14.1      35.8     -0.392
+#>  2     2     7.89     39.8      0.198
+#>  3     3   -12.0      38.0     -0.316
+#>  4     4    -9.79     19.8     -0.494
+#>  5     5    -9.63     40.6     -0.237
+#>  6     6   -18.7      41.9     -0.446
+#>  7     7    -9.84      8.11    -1.21 
+#>  8     8   -11.1      32       -0.347
+#>  9     9    -5.42     36.9     -0.147
+#> 10    10   -12.9       4.86    -2.65 
+#> # ℹ 245 more rows
+#> # ℹ Use `print(n = ...)` to see more rows
+```
