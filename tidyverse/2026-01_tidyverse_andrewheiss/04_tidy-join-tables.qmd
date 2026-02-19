@@ -1,0 +1,61 @@
+---
+title: "Week 4: Tidy and join tables"
+author: "Andrew Heiss"
+date: "2026-02-17"
+---
+
+## General tips
+
+Check out [tidyexplain](https://www.garrickadenbuie.com/project/tidyexplain/) for helpful animations of R's different joining functions
+
+---
+
+There are a few ways you can disable or comment out entire chunks:
+
+1. Comment out every line
+
+```{r}
+#| echo: fenced
+# 1 + 1
+# mean(1:5)
+# median(1:5)
+```
+
+2. Use `echo: false` to hide it and `eval: false` to make it not run:
+
+```{{r}}
+#| echo: false
+#| eval: false
+
+1 + 1
+mean(1:5)
+median(1:5)
+```
+
+3. Turn the chunk into regular, non-executable text with `{.r}` instead of `{r}`:
+
+```` markdown
+```{.r}
+1 + 1
+mean(1:5)
+median(1:5)
+```
+````
+
+## Recreation start
+
+```{.r}
+mdrd_tidy <- mdrd %>%
+  pivot_longer(
+    cols = starts_with("diet"),
+    names_to = "treatment",
+    values_to = "value"
+  ) %>%
+  filter(value == 1) %>%
+  select(-value) %>%
+  group_by(treatment, ptid) %>%
+  summarize(
+    gfr_slope = (last(gfr) - first(gfr)) / (last(months) - first(months))
+  ) %>%
+  left_join(supp, by = join_by(ptid))
+```
