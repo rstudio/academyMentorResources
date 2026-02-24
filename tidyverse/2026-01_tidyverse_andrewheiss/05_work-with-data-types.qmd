@@ -1,0 +1,131 @@
+---
+title: "Week 5: Work with data types"
+author: "Andrew Heiss"
+date: "2026-02-24"
+---
+
+## Recoding variables
+
+There are lots of ways to recode variables! Here are some:
+
+```{r}
+#| warning: false
+#| message: false
+
+library(tidyverse)
+```
+
+### `ifelse()` (don't do this!)
+
+```{r}
+mpg_cleaned_ifelse <- mpg |>
+  mutate(
+    class_clean = ifelse(
+      class == "compact",
+      "Compact",
+      ifelse(
+        class == "midsize",
+        "Midsize",
+        ifelse(
+          class == "suv",
+          "SUV",
+          "something else"  #  AND SO ON for all the other classes
+        )
+      )
+    )
+  )
+
+mpg_cleaned_ifelse |> 
+  select(class, class_clean, everything())
+```
+
+### `case_when()` (do this!)
+
+`case_when()` is like a fancier, multi-statement version of `ifelse()`:
+
+```{r}
+mpg_cleaned_case_when <- mpg |>
+  mutate(
+    class_clean = case_when(
+      class == "compact" ~ "Compact",
+      class == "midsize" ~ "Midsize",
+      class == "suv" ~ "SUV",
+      .default = "Something else"  # Anything that doesn't match gets this value
+    )
+  )
+
+mpg_cleaned_case_when |> 
+  select(class, class_clean, everything())
+```
+
+### `case_match()` (do this!)
+
+`case_match()` is like `case_when()`, but for only running tests in one variable:
+
+```{r}
+mpg_cleaned_case_match <- mpg |>
+  mutate(
+    class_clean = case_match(
+      class,
+      "compact" ~ "Compact",
+      "midsize" ~ "Midsize",
+      "suv" ~ "SUV",
+      .default = "Something else"
+    )
+  )
+
+mpg_cleaned_case_match |>
+  select(class, class_clean, everything())
+```
+
+### `left_join()` another dataset (do this!)
+
+You can also use a smaller dataset and left join it into the main dataset. This is helpful when you have lots of things to recode (like patient-level information):
+
+```{r}
+# Make a little lookup dataset mapping class to nicer names
+classes <- tribble(
+  ~class       , ~class_clean ,
+  "compact"    , "Compact"    ,
+  "midsize"    , "Midsize"    ,
+  "suv"        , "SUV"        ,
+  "2seater"    , "Two-seater" ,
+  "minivan"    , "Minivan"    ,
+  "pickup"     , "Pickup"     ,
+  "subcompcat" , "Subcompact"
+)
+
+# Join it
+mpg_cleaned_left_join <- mpg |>
+  left_join(classes, by = join_by(class))
+
+mpg_cleaned_left_join |>
+  select(class, class_clean, everything())
+```
+
+### `recode()`
+
+`recode()` works too, but the documentation for it recommends using `case_when()` or `case_match()`:
+
+```{r}
+mpg |>
+  mutate(
+    class_clean = recode(class, "compact" = "Compact", "midsize" = "Midsize")
+  )
+```
+
+## Milestone start
+
+```{.r}
+treatment <- mdrd_tidy %>% 
+  separate_wider_delim(cols = treatment, delim = "_", names = c("diet", "bp")) %>% 
+  # You could clean up the columns first and remove the word "diet", but you 
+  # could also just leave "diet" in there and match in case_match() based on 
+  # the full original value
+  # mutate(diet = str_remove(diet, "diet"))
+  mutate(diet_clean = case_match(
+    diet,
+    "dietl" ~ "Low-protein",
+    "dietk" ~ "Very low-protein"
+  ))
+```
