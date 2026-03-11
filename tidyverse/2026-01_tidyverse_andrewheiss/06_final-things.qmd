@@ -1,0 +1,14 @@
+---
+title: "Week 6: Reports, data visualization, and models"
+author: "Andrew Heiss"
+date: "2026-03-10"
+---
+
+## All sorts of links!
+
+- [Course on data visualization with ggplot](https://datavizsp26.classes.andrewheiss.com/) + [other example class websites](https://www.andrewheiss.com/teaching/) and teaching materials
+- [Quarto used in production for US state-level election results reporting](https://andrewheiss.github.io/election-desk/posit-conf-2025.html)
+- [Research notebook](https://stats.andrewheiss.com/silent-skywalk/) + [article manuscript](https://stats.andrewheiss.com/silent-skywalk/notebook/manuscript.html) with Quarto
+- [{clinify}](https://atorus-research.github.io/clinify/) for making clinical reporting tables
+- The [pharmaverse](https://pharmaverse.org/) collection of packages
+- [Adding SAS chunks to Quarto documents](https://docs.ropensci.org/sasquatch/)
