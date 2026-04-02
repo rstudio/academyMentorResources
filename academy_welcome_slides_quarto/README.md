@@ -42,3 +42,5 @@ The welcome meeting goes faster if you skip introductions. Moreover, when you me
 ## 4. Render
 
 When you're done, hit "Render" to get a standalone HTML file.
+
+Or on the terminal type `quarto render course-tidyverse.qmd --output my-presentation.html`
