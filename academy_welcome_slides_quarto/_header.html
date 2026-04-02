@@ -1,0 +1,51 @@
+<!-- header explained here: https://stackoverflow.com/questions/34706859/set-header-and-footer-reveal-js-presentation -->
+
+<!-- explanation for hiding things on first slide explained here: https://stackoverflow.com/questions/75351401/remove-slide-number-and-footer-on-quarto-title-slide -->
+
+<div class="header">
+    <section>
+      Academy Overview
+    </section>
+</div>
+
+<script>
+  function remove() {
+    let header = document.querySelector("div.header");
+    let reveal = document.querySelector(".reveal");
+    reveal.insertBefore(header, reveal.firstChild);
+
+    let footer = document.querySelector('div.footer');
+    let logo = document.querySelector('img.slide-logo');
+    let slideNo = document.querySelector('div.slide-number');
+    let slide = document.querySelector('div.slides section');
+    slideNo.classList.add('hide');
+    footer.classList.add('hide');
+    header.classList.add('hide');
+    logo.classList.add('hide');
+
+    Reveal.on('slidechanged', event => {
+      if(Reveal.isFirstSlide()) {
+        slideNo.classList.add('hide');
+        footer.classList.add('hide');
+        header.classList.add('hide');
+        logo.classList.add('hide');
+      } else if(Reveal.isLastSlide()) {
+        slideNo.classList.add('hide');
+        footer.classList.add('hide');
+        header.classList.add('hide');
+        slide.classList.add('last-slide');
+        logo.classList.add('hide');
+      } else {
+        slideNo.classList.remove('hide');
+        footer.classList.remove('hide');
+        header.classList.remove('hide');
+        logo.classList.remove('hide');
+        logo.classList.remove('top-logo');
+      }
+    });
+  }
+
+  window.onload = remove();
+</script>
+
+

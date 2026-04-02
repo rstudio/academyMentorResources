@@ -1,0 +1,40 @@
+## Milestone structure {.center .slide-gray}
+
+:::: columns
+::: {.column .fragment width="33%"}
+![](images/example-milestone1.png)
+:::
+
+::: {.column .fragment width="33%"}
+::: {style="background-color:#FFFFFF;"}
+![](images/example-milestone1.png)
+Recreation
+:::
+:::
+
+::: {.column .fragment width="33%"}
+::: {style="background-color:#FFFFFF;"}
+![](images/example-milestone3.png)
+Extension
+:::
+:::
+::::
+
+::: notes
+Each of these milestones will follow a repeated pattern:
+- The milestone will contain an artifact **\[CLICK\]**, like a table or a graph made using the project data.
+- You'll have a week to apply the skills you've learned to try to
+-   **(1) recreate that artifact \[CLICK\] and**
+-   **(2) extend the milestone \[CLICK\] to answer some question by modifying it or adding to it, often using something new about R that you've explored on your own.**
+
+This is your chance to explore something new about R. Use the milestone to stretch your limits and try out something \* *not* \* taught in a tutorial.
+
+Becoming a `{r} params$become` means gaining comfort in teaching yourself new R skills---and this is something that we want to explicitly give you experience with in Academy. ✻
+:::
+
+
+## `{r} params$weeks` weeks, `{r} params$weeks` milestones {.center .slide-stickies}
+
+::: notes
+This cycle repeats over the `{r} params$weeks` weeks, building up `{r} params$weeks` progressive milestones into one finished project. This way, you'll chew on bite-sized pieces in order to finish the larger meal working one week at time. We're working with some complex data, so it's good that we can break it down like this. ✻
+:::

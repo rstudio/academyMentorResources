@@ -1,0 +1,93 @@
+---
+date: 2026-03-03
+params:
+  mentor: "James Clawson"
+  scheduler: "scheduler.zoom.us/james-clawson/academy"
+  campsite: "pub.academy.posit.team/tidyverse"
+  new_campsite: true
+  communication: "Teams"
+  group: "Amgen"
+  weeks: 6
+  day1: "Tuesdays"
+  day2: "Thursdays"
+  become: "a code-first data scientist"
+  lesson1: "Welcome to R"
+---
+
+<!-- uncomment to include introductions during welcome -->
+<!-- {{< include _s-introductions.qmd >}} -->
+
+## Getting Started with R {.slide-shiny}
+
+Reproducible, reliable data science using open source methods
+
+-  Read and visualize
+-  Summarize and explore
+-  Join and tidy
+-  Report and publish
+
+::: notes
+By the end of this course, you will be familiar with doing a number of things in R.
+:::
+
+<!-- defines strings for later slides -->
+{{< include _s-become.qmd >}}
+
+<!-- slides about course design -->
+{{< include _s-design.qmd >}}
+
+## Course Outline
+
+1. [Import and Visualize (`{r} mondays[1]`)]{.fragment}
+2. [Summarize Data (`{r} mondays[2]`)]{.fragment}
+3. [Wrangle Rows and Columns (`{r} mondays[3]`)]{.fragment}
+4. [Tidy and Join Tables (`{r} mondays[4]`)]{.fragment}
+5. [Work with Data Types (`{r} mondays[5]`)]{.fragment}
+
+— Working Week (`{r} mondays[6]`) —
+
+6. [*Choose your own adventure* (`{r} mondays[7]`)]{.fragment}
+
+::: notes
+Over the next `{r} params$weeks` weeks, we'll be putting in this practice, with specific focus areas for each week.
+
+**[[weeks]]**
+
+ (I'll come back to touch on that last week shortly.) All of this will work toward understanding a shared data set.
+:::
+
+<!-- PROJECT - (Uncomment one below) -->
+<!-- {{< include _project-tidyverse-covid.qmd >}} -->
+{{< include _project-tidyverse-mdrd.qmd >}}
+<!-- {{< include _project-tidyverse-solar.qmd >}} -->
+
+<!-- Near-final slides for tidyverse and pinr -->
+{{< include _s-final.qmd >}}
+
+## Week 6: *Choose your adventure*
+
+:::: {columns}
+::: {.column}
+
+Option of three tracks:
+
+1. Report and Publish
+2. Data Visualization
+3. Transform and Model
+
+::: {.callout-note appearance="simple" style="margin-right: 7%;"}
+`{r} ifelse(as.logical(params$new_campsite %||% FALSE), "We'll talk more about this in a later week.", "They look like three weeks, but each is available for selection.")`
+:::
+:::
+
+::: {.column}
+
+![](`{r} campsite_tracks`){.absolute top=100 width="50%"}
+:::
+::::
+
+::: notes
+And all of this helps you build confidence into the final week, where you get to *choose your own adventure*. Three tracks give you a chance to dive more deeply into a topic you care about. They're distributed across what looks like three "weeks" in the interface, but you'll be able to skip to whichever you want. ✻
+:::
+
+{{< include _s-nextactions.qmd >}}

@@ -1,0 +1,63 @@
+## Become `{r} params$become`. {.slide-marvel}
+
+```{r}
+#| echo: false
+campsite_url <- htmltools::a(
+  params$campsite,
+  href = glue::glue("https://{params$campsite}"))
+
+schedule_url <- htmltools::a(
+  params$scheduler,
+  href = glue::glue("https://{params$scheduler}"),
+  style = "font-size: 0.7em;")
+
+communication <- params$communication |> 
+  stringr::str_to_title()
+
+if (stringr::str_detect(tolower(params$communication), "teams") & stringr::str_detect(tolower(params$group), "pfizer") & stringr::str_detect(tolower(params$lesson1), "functions")) {
+  communication_img <- htmltools::img(src="images/microsoft-teams-pfizer-pinr.png")
+} else if (stringr::str_detect(tolower(params$communication), "teams") & stringr::str_detect(tolower(params$group), "pfizer")) {
+  communication_img <- htmltools::img(src="images/microsoft-teams-pfizer.png")
+} else if (stringr::str_detect(tolower(params$communication), "teams") & stringr::str_detect(tolower(params$group), "dow")) {
+  communication_img <- htmltools::img(src="images/microsoft-teams-dow.png")
+} else if (stringr::str_detect(tolower(params$communication), "teams")) {
+  communication_img <- htmltools::img(src="images/microsoft-teams.png")
+} else if (stringr::str_detect(tolower(params$communication), "slack") & stringr::str_detect(tolower(params$group), "mayo")) {
+  communication_img <- htmltools::img(src="images/slack-mayo.png")
+} else if (stringr::str_detect(tolower(params$communication), "slack")) {
+  communication_img <- htmltools::img(src="images/slack.png")
+}
+
+mondays <- lubridate::floor_date(
+  lubridate::as_date(rmarkdown::metadata$date) + (7 * (1:(params$weeks + 1))),
+  unit = "week",
+  week_start = 1) |> 
+  {\(x) paste(lubridate::month(x, label = TRUE), lubridate::day(x))}()
+
+new_campsite <- as.logical(params$new_campsite %||% FALSE)
+
+if (new_campsite) {
+  campsite_blank <- "images/campsite_new-blank.png"
+  campsite_annotated <- "images/campsite_new-campsite.png"
+  campsite_lessons <- "images/campsite_new-lessons.png"
+  campsite_milestone <- "images/campsite_new-milestone.png"
+  campsite_tracks <- "images/campsite_new-tracks.png"
+  
+  academy_lessons_a <- "images/academy_new-lesson-A.png"
+  academy_milestone <- "images/academy_new-milestone.png"
+} else {
+  campsite_blank <- "images/campsite_old-blank.png"
+  campsite_annotated <- "images/campsite_old-campsite.png"
+  campsite_lessons <- "images/campsite_old-lessons.png"
+  campsite_milestone <- "images/campsite_old-milestone.png"
+  campsite_tracks <- "images/campsite_old-tracks.png"
+  
+  academy_lessons_a <- "images/academy_old-lesson-A.png"
+  academy_milestone <- "images/academy_old-milestone.png"
+}
+
+```
+
+::: notes
+If you've ever seen one of these shows or movies about becoming... `{r} params$become`... you probably remember that the early scenes show the budding hero trying something and being surprised when things *kind of work*, but also *kind of fail*. They're still getting used to their powers and they don't yet have a handle on... how the code works. Then we probably see a training montage as they try things out, practice different functions, read error messages, and delight in new milestones -- still sometimes getting things wrong, but shifting the balance as they improve over time. They want to master everything at once, but they learn that this isn't quite how anyone gets good at *coding* -- or anything, really.
+:::

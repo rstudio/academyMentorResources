@@ -1,0 +1,9 @@
+## Covid-19 Tracking {.slide-project-mdrd .section-end}
+
+Data from The Covid Tracking Project, compiled in real time to understand the US COVID-19 testing effort and the outbreak's effects on communities it touched.
+
+::: notes
+PROJECT: you'll be exploring data from **The Covid Tracking Project**. With each week's lessons, we'll be building techniques to get better at asking questions about and exploring what this (sometimes messy, very real) data can show.
+
+The process we're following will be pretty clear once we get into it. By working on this project over multiple weeks, you'll **<i>gain skills</i>** as you **<i>apply them</i>**, all the while **<i>practicing</i>** as you go. ✻
+:::

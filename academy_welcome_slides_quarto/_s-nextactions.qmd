@@ -1,0 +1,15 @@
+## Next Actions {.slide-darkdots}
+
+1. [ ] Confirm access: `{r} campsite_url`
+2. [ ] Introduce yourself on `{r} communication`
+3. [ ] Schedule a 1:1 `{r} schedule_url`
+4. [ ] Block off time *daily* for Academy
+5. [ ] Lesson 1: `{r} params$lesson1`
+
+::: notes
+That brings us to the end of what I've prepared, and I'm happy to open the floor to questions.
+
+Thanks all! Go ahead and get started on the first week's material, and we'll see you at your first collaboration session next week! ...
+
+If anyone still has login issues, stick around and we can work on those in real time right now. ✻
+:::

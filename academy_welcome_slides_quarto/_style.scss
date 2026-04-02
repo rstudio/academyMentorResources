@@ -1,0 +1,654 @@
+/*-- scss:functions --*/
+
+
+/*-- scss:defaults --*/
+
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300;400;600;700&display=swap");
+
+// fonts
+$font-family-sans-serif: "Open Sans", sans-serif;
+$font-family-monospace: "Source Code Pro", monospace;
+
+// colors
+$body-bg: #22394c;
+$accent-color: #a1b7cb;
+$body-color: #ffffff;
+$link-color: #5588ff;
+
+// headings
+$presentation-heading-font: $font-family-sans-serif !important;
+$heading-font: $font-family-sans-serif !important;
+$r-heading-font: $font-family-sans-serif !important;
+
+$presentation-heading-font-weight: 300 !important;
+
+
+/*-- scss:rules --*/
+h1.title {
+  text-align: left;
+  max-width: 60%;
+  margin-bottom: 0.5em;
+}
+
+div.slides section:last-child h2 {
+  font-size: 100px;
+}
+
+@mixin top-logo {
+  content: "";
+  background-size: contain !important;
+  background-repeat: no-repeat !important;
+  width: 160px;
+  height: 50px;
+  display: block;
+}
+
+h1.title::before {
+  background: url('../../../../../images/logo-white.svg');
+  margin-bottom: 0.5em !important;
+  margin-top: -1.8em !important;
+  @include top-logo;
+}
+
+div.slides section:last-child h2::before {
+  background: url('../../../../../images/logo-white.svg');
+  margin-bottom: 0.15em !important;
+  margin-top: -2em !important;
+  @include top-logo;
+}
+
+section.color-logo h2::before {
+  background: url('../../../../../images/logo-color.svg');
+  margin-top: -4.75em !important;
+  margin-bottom: 4em !important;
+  @include top-logo;
+}
+
+.quarto-title-authors, .quarto-title-author {
+  justify-content: left !important;
+  padding-left: 0 !important;
+}
+
+.quarto-title-authors, .date {
+  text-align: left !important;
+  max-width: 60%;
+  font-family: $font-family-monospace !important;
+}
+
+.center h2, h2 span.center, .center {
+  text-align: center !important;
+  display: block !important;
+}
+
+.center h2 {
+  margin-top: -1em;
+}
+
+img {
+  display: block !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+img.trim{
+  width: 300px;
+  height: 337px;
+  object-fit: cover;
+  object-position: 100% 0;
+}
+
+.staff-image {
+  max-height: 300px !important;
+  width: auto !important;
+  height: auto !important;
+  float: left;
+  margin-right: 1em !important;
+  margin-top: 1em !important;
+}
+
+p:has(img.staff-image) + p, img.staff-image + p {
+  /* text-align: center; */
+  text-align: left;
+  margin-top: 1.5em;
+  margin-left: 1em;
+}
+
+.right h2 {
+  text-align: right !important;
+  float: right !important;
+  display: block !important;
+  max-width: 50%;
+}
+
+.untitled h2, .center .untitled h2 {
+  display: none !important;
+}
+
+/* slide templates */
+/* technique from https://emilhvitfeldt.com/post/slidecraft-scss-themes/ */
+
+.slide-overview{
+  @extend .untitled;
+  padding-top: 1.5em;
+  font-size: 1.5em;
+}
+
+.slide-sidebar {
+  img {
+    margin-left: 35% !important;
+    max-width: 680px !important;
+    object-fit: scale-down;
+    top: 50%;
+  }
+
+  h2 {
+    color: white !important;
+    max-width: 30% !important;
+    position: absolute;
+    left: 0;
+    font-size: 1.3em;
+    text-shadow: 3px 3px 3px #335473, 3px -3px 3px #335473, -3px 3px 3px #335473, -3px -3px 3px #335473;
+  }
+
+  .slide-background-content {
+    background: linear-gradient(90deg, #335473 35%, #FFFFFF 35%);
+  }
+}
+
+.slide-gray {
+  color: #000000 !important;
+
+  h2 {
+     color: #000000 !important;
+   }
+
+  .slide-background-content {
+    background-color: #E7E6E6;
+  }
+}
+
+.slide-white {
+   color: #000000 !important;
+
+   h2 {
+     color: #000000 !important;
+   }
+
+  .slide-background-content {
+    background-color: #FFFFFF;
+  }
+}
+
+.slide-code {
+  @extend .shaded;
+  text-align: left !important;
+
+  h2 {
+    text-align: left !important;
+  }
+
+  .slide-background-content {
+    background-image: url("../../../../../images/rstudio.png");
+  }
+}
+
+.slide-marvel {
+  text-align: left !important;
+
+  h2 {
+    text-align: right !important;
+    float: right !important;
+    display: block !important;
+    max-width: 50%;
+    position: absolute;
+    top: 40%;
+    transform: translate(100%, -50%);
+  }
+
+  h2:after {
+    content: "" !important;
+  }
+
+  .slide-background-content {
+    background-image: url("../../../../../images/kamala-khan.png");
+    background-color: #0a0b06;
+    background-position: bottom left -600px;
+    background-size: auto 100%;
+  }
+
+  .slide-background-content:after {
+    content: "Image credit: Marvel";
+    font-family: $font-family-monospace;
+    position: absolute;
+    display: block;
+    text-align: left;
+    left: -5em;
+    bottom: 7.5em;
+    font-size: 0.65em;
+    transform: rotate(90deg);
+    color: $accent-color;
+  }
+}
+
+.slide-workshops1 {
+  @extend .slide-gray;
+  @extend .untitled;
+
+  .slide-background-content {
+    background-image: url("../../../../../images/workshop.png");
+    background-position: 50% -10%;
+    background-size: 80%;
+  }
+}
+
+.slide-piano {
+  @extend .shaded;
+  text-align: left !important;
+
+  h2 {
+    margin-left: 3em;
+  }
+
+  ul {
+    margin-left: 17em;
+  }
+
+  .slide-background-content {
+    background-image: url("../../../../../images/bg-piano.png");
+  }
+}
+
+.slide-project-rhc {
+  h2{
+    margin-top: 10%;
+    margin-bottom: 0.7em;
+  }
+
+  .slide-background-content {
+    background-image: url("../../../../../images/bg-stethoscope.png");
+    opacity: 0.5;
+  }
+}
+
+.slide-project-acs {
+  h2{
+    margin-top: 10%;
+    margin-bottom: 0.7em;
+  }
+
+  .slide-background-content {
+    background-image: url("../../../../../images/bg-community.jpg");
+    opacity: 0.3;
+  }
+}
+
+.slide-project-cip {
+  h2{
+    margin-top: 10%;
+    margin-bottom: 0.7em;
+  }
+
+  .slide-background-content {
+    background-image: url("../../../../../images/bg-potatoes.png");
+    opacity: 0.5;
+  }
+}
+
+.slide-project-mdrd {
+  h2{
+    margin-top: 10%;
+    margin-bottom: 0.7em;
+  }
+
+  .slide-background-content {
+    background-image: url("../../../../../images/bg-stethoscope.png");
+    opacity: 0.5;
+  }
+}
+
+.slide-project-solar {
+  h2{
+    font-size: 59px;
+    margin-top: 10%;
+    margin-bottom: 0.7em;
+  }
+
+  .slide-background-content {
+    background-image: url("../../../../../images/bg-solar.jpg");
+    opacity: 0.5;
+  }
+}
+
+.slide-course {
+  @extend .shaded;
+  text-align: left !important;
+
+  h2 {
+    margin-left: 3em;
+  }
+
+  .slide-background-content {
+    opacity: 0.2;
+    background-color: rgba(0, 90, 130, .15);
+  }
+}
+
+.slide-shiny {
+  @extend .slide-course;
+  .slide-background-content {
+    background-image: url("../../../../../images/bg-shiny.png");
+  }
+}
+
+.slide-stickies {
+  @extend .shaded;
+
+  .slide-background-content {
+    background-image: url("../../../../../images/bg-stickies.png");
+    opacity: 0.7;
+  }
+}
+
+.slide-books {
+  @extend .shaded;
+
+  .slide-background-content {
+    background-image: url("../../../../../images/bg-library.png");
+    opacity: 0.5;
+  }
+}
+
+.slide-experiment {
+  @extend .header-overlay;
+
+  .slide-background-content {
+    background-image: url("../../../../../images/bg-experiment.png");
+  }
+}
+
+.slide-milestones {
+  @extend .shaded;
+
+  .slide-background-content {
+    background-image: url("../../../../../images/bg-roundtable.png");
+    opacity: 0.5;
+  }
+}
+
+.slide-collaboration {
+  @extend .shaded;
+
+  .slide-background-content {
+    background-image: url("../../../../../images/bg-collaboration.png");
+    opacity: 0.5;
+  }
+}
+
+.slide-goal {
+  @extend .header-overlay;
+
+  .slide-background-content {
+    background-image: url("../../../../../images/bg-roundtable.png");
+    background-color: "black";
+    opacity: 0.5;
+  }
+}
+
+.slide-bluedots {
+  @extend .blue-text;
+  @extend .color-logo;
+
+  .slide-background-content {
+    background-image: url("../../../../../images/bg-dots-white.png");
+  }
+}
+
+.slide-darkdots {
+  h2{
+    margin-top: 2em;
+  }
+
+  .slide-background-content {
+    background-image: url("../../../../../images/bg-dots-dark.png");
+    background-color: "black";
+  }
+}
+
+/* These id definitions come from the headers of the slides */
+
+@mixin inline-charm {
+  content: "";
+  background-size: 50px 50px;
+  background-repeat: no-repeat;
+  width: 50px;
+  height: 50px;
+  display: inline-block;
+  margin-left: 0.25em;
+}
+
+#your-project {
+  h2::after {
+    background: url('../../../../../images/lineart-tools.png');
+    @include inline-charm;
+  }
+}
+
+#project-structure {
+  h2::after {
+    background: url('../../../../../images/lineart-graph.png');
+    @include inline-charm;
+  }
+}
+
+.shaded {
+  text-shadow: 3px 3px 3px #000000, 3px -3px 3px #000000, -3px 3px 3px #000000, -3px -3px 3px #000000;
+
+  h2 {
+    text-shadow: 3px 3px 3px #000000, 3px -3px 3px #000000, -3px 3px 3px #000000, -3px -3px 3px #000000;
+  }
+
+  .slide-background-content {
+    background-color: #000000;
+  }
+
+  ul {
+    list-style: none;
+  }
+
+  li:before {
+    content: '\2022';
+    margin-right: 0.5em;
+    margin-left: -0.5em;
+    text-shadow: 3px 3px 3px #000000, 3px -3px 3px #000000, -3px 3px 3px #000000, -3px -3px 3px #000000;
+  }
+
+}
+
+.blue-text {
+  color: lighten($body-bg, 20%) !important;
+
+  h2 {
+    color: lighten($body-bg, 20%) !important;
+  }
+
+  .slide-background-content {
+    background-color: #FFFFFF;
+  }
+}
+
+.faint {
+  font-weight: 100;
+  opacity: 0.75;
+}
+
+section.slide-overview ol li {
+  opacity: 0.5;
+  text-decoration: line-through;
+}
+
+section.slide-overview ol li:has(span.currentstep),
+section.slide-overview ol li:has(span.currentstep) ~ li {
+  text-decoration: none;
+}
+
+section.slide-overview ol li:has(span.currentstep) {
+  opacity: 1;
+  font-weight: bold;
+  color: #FFFFFF;
+}
+
+.header-overlay h2 {
+  color: white !important;
+  text-align: center !important;
+  background-color: rgba($body-bg, .6);
+  padding: 0.5em;
+  font-size: 1.2em;
+  margin-top: 1em;
+  margin-left: -5em;
+  margin-right: -5em;
+}
+
+h1, h2, h3, h4, h5, .reveal h1, .reveal h2, .reveal h3, .reveal h4, .reveal h5 {
+  font-family: $font-family-sans-serif !important;
+}
+
+#speaker-controls > div.speaker-controls-notes > div {
+  content: "☞" !important;
+}
+
+/* inline image trick from here: https://stackoverflow.com/questions/74100418/inline-images-in-quarto-markdown */
+
+.inline {
+  margin: 0!important;
+  height: 50px;
+  display: inline !important;
+}
+
+/* used for running header, explained here: https://stackoverflow.com/questions/34706859/set-header-and-footer-reveal-js-presentation */
+
+.reveal .header {
+  position: absolute;
+  top: 1em;
+  left: 2em;
+  font-size: 0.4em;
+  color: $accent-color;
+  font-family: $font-family-monospace !important;
+  text-transform: uppercase;
+  /* z-index: 2; */
+}
+
+.reveal .slides {
+  margin-top: 1em;
+}
+
+/* used for hiding the header on key slides, explained here: https://stackoverflow.com/questions/75351401/remove-slide-number-and-footer-on-quarto-title-slide */
+
+.hide {
+  display: none !important;
+}
+
+/* curly brace from here: https://codepen.io/mexn/pen/AjqrZv */
+
+#curly-brace
+{
+  width: 800px;
+  position: absolute;
+  left: 50%;
+  margin-left: -400px;
+  top: 80px;
+  transform: rotate(180deg);
+}
+
+.brace
+{
+  border-bottom: 5px solid;
+  margin: 0 10%;
+  width: 30%;
+  height: 20px;
+  float: left;
+}
+
+.brace:before,
+.brace:after
+{
+  content: "";
+  width: 10%;
+  height: 50px;
+  position: absolute;
+  display: block;
+}
+
+#left:before
+{
+  border-bottom: 5px solid;
+  border-bottom-left-radius: 20px;
+  margin-left: -10%;
+  margin-top: -30px;
+}
+
+#left:after
+{
+  border-top: 5px solid;
+  border-top-right-radius: 20px;
+  margin-left: 30%;
+  margin-top: 20px;
+}
+
+#right:before
+{
+  border-top: 5px solid;
+  border-top-left-radius: 20px;
+  margin-left: -10%;
+  margin-top: 20px;
+}
+
+#right:after
+{
+  border-bottom: 5px solid;
+  border-bottom-right-radius: 20px;
+  margin-left: 30%;
+  margin-top: -30px;
+}
+
+#next-actions ol li:has(input[type='checkbox']:checked) {
+  text-decoration: line-through;
+}
+
+/* better form controls on next-actions slide */
+/* source: https://stackoverflow.com/questions/4137255/checkboxes-in-web-pages-how-to-make-them-bigger */
+
+#next-actions input[type=checkbox] {
+  margin-right: 0.5em;
+  appearance: none;
+  vertical-align: middle;
+  outline: none;
+  font-size: inherit;
+  cursor: pointer;
+  width: 1.0em;
+  height: 1.0em;
+  background: white;
+  border-radius: 0.25em;
+  border: 0.125em solid #555;
+  position: relative;
+}
+
+#next-actions input[type='checkbox']:checked {
+  background: #adf;
+}
+
+#next-actions input[type='checkbox']:checked:after {
+  content: "✔";
+  position: absolute;
+  font-size: 100%;
+  left: 0.0625em;
+  top: -0.25em;
+}
+
+#course-outline .columns .column p span {
+  display: block;
+  text-shadow: 0 0 0.75em #22394c, 0 0 0.15em #ffffff, 0 0 0.1em #ffffff, 0 0 0.05em #ffffff;
+  color: black;
+  text-align: center;
+  font-size: 95%;
+}

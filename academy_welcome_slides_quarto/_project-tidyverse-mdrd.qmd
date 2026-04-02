@@ -1,0 +1,9 @@
+## Diet in Renal Disease {{< fa staff-snake >}}{.slide-project-mdrd .section-end}
+
+CDC data from randomized clinical trials measuring the progression of chronic kidney disease with or without a modified diet.
+
+::: notes
+PROJECT: you'll be exploring the **effects of modified diet on renal disease**. With each week's lessons, we'll be building techniques to get better at asking and exploring how a modified diet affects patients with this condition.
+
+The process we're following will be pretty clear once we get into it. By working on this project over multiple weeks, you'll **<i>gain skills</i>** as you **<i>apply them</i>**, all the while **<i>practicing</i>** as you go. ✻
+:::

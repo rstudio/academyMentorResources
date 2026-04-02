@@ -1,0 +1,86 @@
+```{r}
+#| echo: false
+
+# correcting weird rotation problem with day length
+if ("day1" %in% names(params)) {
+  if (params$day1 %in% "Wednesdays") {
+    arrow_style1 <- "transform: rotate(25deg); transform-origin: top left; font-size: 0.7em; text-align: left; top: 190px; right: -30px;"
+  } else if (params$day1 %in% c("Fridays")) {
+    arrow_style1 <- "transform: rotate(25deg); transform-origin: top left; font-size: 0.7em; text-align: left; top: 190px; right: 42px;"
+  } else if (params$day1 %in% c("Mondays", "Tuesdays")) {
+    arrow_style1 <- "transform: rotate(25deg); transform-origin: top left; font-size: 0.7em; text-align: left; top: 190px; right: 15px;"
+  } else {
+    arrow_style1 <- "transform: rotate(25deg); transform-origin: top left; font-size: 0.7em; text-align: left; top: 190px; right: 15px;"
+  }
+  
+  if (params$day2 %in% "Wednesdays") {
+    arrow_style2 <- "transform: rotate(25deg); transform-origin: top left; font-size: 0.7em; text-align: left; top: 190px; right: -320px;"
+  } else if (params$day2 %in% c("Fridays")) {
+    arrow_style2 <- "transform: rotate(25deg); transform-origin: top left; font-size: 0.7em; text-align: left; top: 190px; right: -320px;"
+  } else if (params$day2 %in% c("Mondays", "Tuesdays")) {
+    arrow_style2 <- "transform: rotate(25deg); transform-origin: top left; font-size: 0.7em; text-align: left; top: 190px; right: -320px;"
+  } else {
+    arrow_style2 <- "transform: rotate(25deg); transform-origin: top left; font-size: 0.7em; text-align: left; top: 190px; right: -320px;"
+  }
+  
+  arrow_collab <- htmltools::div(
+    htmltools::HTML("&larr;"), params$day1, '= Collaborations',
+    `data-fragment-index` = "0",
+    class = "fragment absolute visible",
+    style = arrow_style1)
+  
+  arrow_milestone <- htmltools::div(
+    htmltools::HTML("&larr;"), params$day2, '= Milestones',
+    `data-fragment-index` = "1",
+    class = "fragment absolute visible",
+    style = arrow_style2)
+}
+```
+
+::::: {.r-vstack}
+::: {style="margin-bottom: 1em;"}
+The week
+:::
+
+:::: {id="curly-brace"}
+::: {.brace id="left"}
+:::
+
+::: {.brace id="right"}
+:::
+::::
+
+:::: {.r-hstack}
+::: {data-id="box1" auto-animate-delay="0" style="background: #44709a; width: 600px; height: 75px; color: #FFFFFF; text-align: center;"}
+::: {fragment-index=2}
+Working on lessons
+:::
+:::
+
+::: {data-id="box2" auto-animate-delay="0.1" style="background: #ef6331; width: 400px; height: 75px; color: #FFFFFF; text-align: center; vertical-align: middle;"}
+::: {fragment-index=3}
+Solving milestones 
+:::
+:::
+:::
+
+::: {.r-hstack}
+::: {style="background: #FFFFFF; width: 466px;"}
+:::
+
+<!-- ::: {.fragment fragment-index=1 .absolute top="190" right="4" style="transform:rotate(25deg); transform-origin: top left; font-size: 0.7em; text-align: left;"} -->
+<!-- &larr; `{r} params$day1` ("Collaborations") -->
+<!-- ::: -->
+
+`{r} arrow_collab`
+
+`{r} arrow_milestone`
+
+:::
+
+
+::: {.fragment fragment-index=3 style="margin-top:3.75em; margin-left: -9em;"}
+**4--6 hours** per week<br>
+**45--60 minutes** per day
+:::
+:::::

@@ -1,0 +1,9 @@
+## Right Heart Catheterization {{< fa heart >}}{.slide-project-rhc .section-end}
+
+Analyze heart catheterization results by disease diagnosis
+
+::: notes
+PROJECT: you'll be exploring the **outcomes of heart catheterization procedures**. Heart catheterization is used as treatment for many different diseases. With each week's lessons, we'll be building techniques to get better at asking and exploring whether the procedure improves the prognosis of some diseases more than others.
+
+The process we're following will be pretty clear once we get into it. By working on this project over multiple weeks, you'll **<i>gain skills</i>** as you **<i>apply them</i>**, all the while **<i>practicing</i>** as you go. ✻
+:::

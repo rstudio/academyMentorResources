@@ -1,0 +1,9 @@
+## International Potato Center {{< fa seedling >}}{.slide-project-cip .section-end}
+
+Study yield and nutrient values from agricultural trials in Peru.
+
+::: notes
+PROJECT: you'll be exploring agricultural data from the **International Potato Center** (ICP). With each week's lessons, we'll be building techniques to get better at asking and exploring what characteristics drive ideal outcomes like production, quality, and nutrient value.
+
+The process we're following will be pretty clear once we get into it. By working on this project over multiple weeks, you'll **<i>gain skills</i>** as you **<i>apply them</i>**, all the while **<i>practicing</i>** as you go. ✻
+:::

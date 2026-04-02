@@ -1,0 +1,18 @@
+## Signup process {.slide-white}
+
+![](images/example-signup.png)
+
+1.  Go to [posit.cloud/plans/free](https://posit.cloud/plans/free). Click Sign Up. Use your work email to create a free Cloud account.
+2.  Go to `{r} campsite_url`. Click Login.
+3.  Enter your email and password from Step 1.
+4.  🎉 You now have access to the Academy website.
+
+::: notes
+Before accessing the Academy website, we need to create a free account on Posit Cloud, using your work email. Once that's created, you can go to the site specific to this course and log in using those credentials.
+
+Take a couple of minutes now to do just this. Please let me know if you run into issues. If you have successfully logged in, give me a thumbs up so we know you have successfully logged in.
+
+(time passes)
+
+That looks like most people have successfully logged in -- if you have any specific issues, we can look at those at the end of this call. ✻
+:::

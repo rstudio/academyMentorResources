@@ -1,0 +1,30 @@
+## Workshops {.untitled .slide-gray}
+
+::: center
+[60%]{style="font-size:4em;"} [  40%  ]{style="font-size:3em;"} [30%]{style="font-size:2em;"}
+:::
+
+**60%** can apply content immediately
+
+**40%** six months later
+
+**30%** one year after
+
+-   [Saks, A.M. (2002). So what is a good transfer of training estimate? A reply to Fitzpatrick. The Industrial-Organizational Psychologist, 39(3), 29--30.](https://www.researchgate.net/profile/Alan_Saks/publication/239769006_So_What_is_a_Good_Transfer_of_Training_Estimate_A_Reply_to_Fitzpatrick/links/556f083808aeccd7774106f7.pdf)
+
+::: notes
+Despite this insight, we regularly see trainings offered in short, intensive workshops that run for one or two days. These are great for drumming up interest -- But the material doesn't always stick. In fact, *most* people forget *most* material from short intensive trainings. ✻
+:::
+
+## Forgetting curves {.center .slide-white}
+
+![](images/crop-forgetting-curve4.jpg)
+
+With regular use, we retain more.<br>
+**Practice makes proficient.**
+
+::: notes
+Don't feel bad about it! Psychologists understand it like this: When we first learn something, we know it well but we begin to forget it almost immediately. Only through repetition can we approach mastery.
+
+In other words, **practice makes proficient**.  ✻
+:::

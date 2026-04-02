@@ -1,0 +1,23 @@
+title: "Welcome to Academy!"
+
+author: "{{< meta params.mentor >}}"
+
+format:
+  revealjs:
+    date-format: "D MMMM YYYY"
+    theme: _style.scss
+    logo: images/logo-white.svg
+    slide-number: true
+    background-color: "#22394c"
+    include-after-body: _header.html
+    embed-resources: true
+
+title-slide-attributes:
+  data-background-image: "images/bg-dots-title.png"
+  data-background-size: contain
+  data-background-position: bottom
+  data-notes: "Hi everyone, I'm very excited to welcome you to learning with Posit Academy. Thank you for being here.<br><br>
+
+-   For the next 20 minutes, I'll be sharing a bit about **what you can expect from this course, what we will be expecting of you, and also introduce you** to the Academy online platform (which includes your first assignment). We'll have time for questions near the end.<br><br>
+
+**Before we start :: I promise this is the most we will talk at you.** Thank you for your bearing through it with me. ✻"

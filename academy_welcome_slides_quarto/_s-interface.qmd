@@ -1,0 +1,31 @@
+## Structure of Academy
+
+:::: columns
+::: column
+-  Campsite
+-  Tutorials / Lessons
+-  Milestones
+:::
+
+::: column
+![](`{r} campsite_blank`){.fragment .fade-in-then-out .absolute top=100 width="50%"}
+![](`{r} campsite_annotated`){.fragment .fade-in-then-out .absolute top=100 width="50%"}
+![](`{r} campsite_lessons`){.fragment .fade-in-then-out .absolute top=100 width="50%"}
+
+![](`{r} campsite_milestone`){.fragment .fade-in .absolute top=100 width="50%"}
+:::
+::::
+
+::: notes
+- When we talk about the *campsite*, we mean the place where all the work gets done.
+- Within that campsite, each week has *lessons* or *tutorials*...
+- And it ends with the *milestone* where we get to apply the things we've learned.
+
+**Let me switch tabs to show some of this interactively.**
+
+- syllabus
+- optional lessons
+- weeks
+- links at top
+- users at bottom (add profile pic)
+:::

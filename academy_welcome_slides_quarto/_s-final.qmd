@@ -1,0 +1,25 @@
+{{< include _s-interface.qmd >}}
+
+{{< include _s-signup.qmd >}}
+
+## Weekly breakdown {.untitled .blue-text}
+
+{{< include _content-weekly1.qmd >}}
+
+::: notes
+We can think of each week in Academy as made up of blocks of time or attention. The first part of the week will be working through interactive *lessons*. **[CLICK]**  The second part will be devoted toward the *milestone* **[CLICK]**.✻
+:::
+
+{{< include _s-interface-examples.qmd >}}
+
+{{< include _s-milestones.qmd >}}
+
+## Weekly breakdown {.untitled .blue-text}
+
+{{< include _content-weekly-end.qmd >}}
+
+::: notes
+We meet together twice a week -- once to go over questions from the lessons and another time to share milestones -- but you'll also devote time to working through the material on your own.
+:::
+
+{{< include _s-communication.qmd >}}

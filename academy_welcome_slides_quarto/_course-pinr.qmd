@@ -1,0 +1,88 @@
+---
+date: 2026-03-03
+params:
+  mentor: "James Clawson"
+  scheduler: "scheduler.zoom.us/james-clawson/academy"
+  campsite: "pfizer.posit.academy"
+  communication: "Teams"
+  group: "Pfizer"
+  weeks: 6
+  day1: "Tuesdays"
+  day2: "Thursdays"
+  become: "an R Programmer"
+  lesson1: "Write R Functions"
+---
+
+<!-- uncomment to include introductions during welcome -->
+<!-- {{< include _s-introductions.qmd >}} -->
+
+<!-- defines strings for later slides -->
+{{< include _s-become.qmd >}}
+
+<!-- slides about course design -->
+{{< include _s-design.qmd >}}
+
+## Course Outline {.slide-white}
+
+:::: {.columns}
+
+::: {.column .fragment width=33%}
+![](images/example-functions.png)
+
+[Write functions]{style="margin: -4.465em auto 2em auto"}
+:::
+
+::: {.column .fragment width=33%}
+![](images/example-projects.png)
+
+[Organize projects]{style="margin: -5.795em auto 4.7em auto; color: white;"}
+
+:::
+
+::: {.column .fragment width=33%}
+![](images/example-map.png) ![](images/example-map2.png)
+
+[Iterate with purrr]{style="margin: -3.4em auto 0 auto;"}
+:::
+
+::::
+
+:::: {.columns style="margin-top: 7em;"}
+
+::: {.column width=16%}
+:::
+
+::: {.column .fragment width=33%}
+![](images/example-debug.png)
+
+[Debug code]{style="margin: -4.25em auto 0 auto;"}
+:::
+
+::: {.column .fragment width=33%}
+![](images/example-moreexamples.png)
+
+[Automate ETL, analysis, plots, and reports]{style="margin: -6.95em auto 0 auto;"}
+:::
+
+::: {.column width=16%}
+:::
+
+::::
+
+::: notes
+Over the next `{r} params$weeks` weeks, we'll be putting in this practice, with specific focus areas for each week. 
+
+**[[weeks]]**
+
+All of this will work toward understanding a shared data set.
+:::
+
+<!-- PROJECT - (Uncomment one below) -->
+{{< include _project-pinr-rhc.qmd >}}
+<!-- {{< include _project-pinr-acs.qmd >}} -->
+<!-- {{< include _project-pinr-cip.qmd >}} -->
+
+<!-- Near-final slides for tidyverse and pinr -->
+{{< include _s-final.qmd >}}
+
+{{< include _s-nextactions.qmd >}}

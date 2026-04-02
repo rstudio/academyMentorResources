@@ -1,0 +1,7 @@
+## `{r} communication` {.slide-white}
+
+`{r} communication_img`
+
+::: notes
+Between our meetings, you have access to a group on `{r} communication` that we'll use for announcements, questions, team encouragement --- you name it! In addition to this, we'll also use it to build connections across your group and to share code. One of our hopes is that by the end of Academy, you will have a community of peers which will be useful as you move forward in your work with R. ✻
+:::

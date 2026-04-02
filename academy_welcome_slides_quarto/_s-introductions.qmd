@@ -1,0 +1,25 @@
+## Introductions
+
+{{< include _about-me.qmd >}}
+
+## Introductions [{{< fa video >}} Cameras on, please]{style="float: right; font-size: 1.75rem; margin-top: 1em;"}
+
+::: fragment
+-   **Name** [(pronouns, optional)]{.faint}
+-   **Geography**
+-   **Motive**
+    -   Why are you here? What do you do? ...and what do you do **with data**?
+-   **Previous Experience**
+    -   courses or workshops
+:::
+
+
+[pass to the next person...]{.faint style="float: right;"}
+
+::: notes
+Now tell us a bit about yourselves. We'll go around the room, choose the next person when you're done.
+
+(introductions)
+
+Awesome -- good to meet everyone! ✻
+:::

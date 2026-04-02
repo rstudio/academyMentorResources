@@ -1,0 +1,66 @@
+---
+date: 2026-03-03
+params:
+  mentor: "James Clawson"
+  scheduler: "scheduler.zoom.us/james-clawson/academy"
+  campsite: "pfizer.posit.academy"
+  communication: "Teams"
+  group: "Pfizer"
+  weeks: 5
+  day1: "Tuesdays"
+  day2: "Thursdays"
+  become: "a Shiny Developer"
+  lesson1: "Welcome to Shiny"
+---
+
+<!-- uncomment to include introductions during welcome -->
+<!-- {{< include _s-introductions.qmd >}} -->
+
+## Shiny for R {.slide-shiny}
+
+Professional interactive web apps with R
+
+-  Create
+-  Manage reactivity
+-  Customize and style
+-  Deploy
+
+::: notes
+By the end of this course, you will gain experience building professional interactive web apps with R.
+:::
+
+<!-- defines strings for later slides  -->
+{{< include _s-become.qmd >}}
+
+<!-- slides about course design -->
+{{< include _s-design.qmd >}}
+
+## Course Outline
+
+1. [Introduction to Shiny (`{r} mondays[1]`)]{.fragment fragment-index=1}
+2. [Reactivity and Modern UIs (`{r} mondays[2]`)]{.fragment fragment-index=1}
+3. [Theming and Publishing (`{r} mondays[3]`)]{.fragment fragment-index=1}
+4. [*Working Week:* Plan and build your own app]{.fragment fragment-index=2}
+5. [Capstone presentations (`{r} mondays[5]`)]{.fragment fragment-index=3}
+
+[**4-6 hours per week; 45 minutes per day**]{.fragment .center fragment-index=4}
+
+::: notes
+Over the next `{r} params$weeks` weeks, we'll be putting in this practice, with specific focus areas for each week. 
+:::
+
+{{< include _s-signup.qmd >}}
+
+## Collaboration
+
+- Lessons: Finish before `{r} params$day1`
+- Milestones: Collaborate on `{r} params$day2`
+
+::: notes
+Shiny offers us the opportunity to build intuitive interfaces for diverse users.
+That's why the course in Shiny---more than other courses in Academy---is designed to encourage collaborative coding. Before each `{r} stringr::str_remove_all(params$day1, "s$")` session, everyone should complete that week's lessons, working through the material at your own pace. When we meet on `{r} params$day2`, we'll work through the milestone exercises in collaborative groups. This gives us opportunities to see more options in play and build off each other's strengths.
+:::
+
+{{< include _s-communication.qmd >}}
+
+{{< include _s-nextactions.qmd >}}

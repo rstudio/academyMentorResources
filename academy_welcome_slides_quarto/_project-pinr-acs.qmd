@@ -1,0 +1,9 @@
+## American Community Survey {{< fa people-roof >}}{.slide-project-acs .section-end}
+
+Gain insights on demographic, social, and economic characteristics within the US population.
+
+::: notes
+PROJECT: you'll be exploring data from the **American Community Survey**, conducted by the US Census Bureau. With each week's lessons, we'll be building techniques to get better at asking and exploring what characteristics are shared within American communities, what makes them stand apart, and how they've changed over time.
+
+The process we're following will be pretty clear once we get into it. By working on this project over multiple weeks, you'll **<i>gain skills</i>** as you **<i>apply them</i>**, all the while **<i>practicing</i>** as you go. ✻
+:::

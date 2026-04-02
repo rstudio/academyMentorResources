@@ -1,0 +1,18 @@
+:::: columns
+::: {.column width="30%"}
+![](images/james.png){.staff-image}
+:::
+
+::: {.column width="70%"}
+**James Clawson** [(he/him)]{.faint} <br> Data Science Mentor
+
+- Chicago, IL
+- literary research using R
+- Posit Academy since 2022
+
+:::
+::::
+
+::: notes
+I'm James Clawson, a Data Science Mentor with Posit Academy. I'm in Chicago, finishing up my first summer in the city. Before moving here, I was an English professor in Louisiana at Grambling State University, where I also taught in and coordinated the data analytics program. I use R in my research, applying text analytics methods to learn and make arguments about literature. ✻
+:::

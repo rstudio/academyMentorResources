@@ -1,0 +1,40 @@
+::: {.r-vstack}
+::: {style="margin-bottom: 1em;"}
+The week
+:::
+
+::: {id="curly-brace"}
+::: {.brace id="left"}
+:::
+
+::: {.brace id="right"}
+:::
+:::
+
+::: {.r-hstack}
+::: {data-id="box1" auto-animate-delay="0" style="background: #44709a; width: 500px; height: 75px; color: #FFFFFF; text-align: center;"}
+::: {.fragment .fade-right fragment-index=1}
+Lessons
+:::
+:::
+
+::: {data-id="box2" auto-animate-delay="0.1" style="background: #ef6331; width: 300px; height: 75px; color: #FFFFFF; text-align: center; vertical-align: middle;"}
+::: {.fragment .fade-left fragment-index=2}
+Milestone
+:::
+:::
+:::
+
+::: {.r-hstack}
+::: {style="background: #FFFFFF; width: 466px;"}
+:::
+
+::: {style="transform:rotate(45deg); font-size: 0.7em; margin-top: 4.7em;"}
+:::
+
+
+::: {style="transform:rotate(45deg); font-size: 0.7em; margin-top: 2.95em;"}
+:::
+
+:::
+:::
