@@ -17,6 +17,123 @@ params:
 <!-- uncomment to include introductions during welcome -->
 ## Introductions
 
+
+```{r}
+#| include: false
+library(stringr)
+library(lubridate)
+library(dplyr)
+library(tibble)
+
+# read raw .ics
+lines <- readLines("calendar/invite.ics")
+
+# handle possible line folding (important for some calendars)
+lines <- gsub("^\\s+", "", lines)
+
+# ---- isolate VEVENT block ----
+start_idx <- grep("^BEGIN:VEVENT", lines)
+end_idx   <- grep("^END:VEVENT", lines)
+
+event_lines <- lines[start_idx:end_idx]
+
+# ---- extract from event only ----
+rrule_line   <- event_lines[grepl("^RRULE", event_lines)][1]
+dtstart_line <- event_lines[grepl("^DTSTART", event_lines)][1]
+
+# ---- parse RRULE ----
+rrule <- str_remove(rrule_line, "RRULE:")
+count <- str_extract(rrule, "COUNT=\\d+") |>
+  str_remove("COUNT=") |>
+  as.integer()
+
+days <- str_extract(rrule, "BYDAY=[A-Z,]+") |>
+  str_remove("BYDAY=") |>
+  str_split(",") |>
+  unlist()
+
+# safety check
+stopifnot(!is.na(count), length(days) > 0)
+
+# ---- parse DTSTART ----
+start_str <- str_extract(dtstart_line, "\\d{8}T\\d{6}")
+start <- ymd_hms(start_str, tz = "Europe/London")
+
+# ---- expand schedule ----
+weekday_map <- c(MO=1, TU=2, WE=3, TH=4, FR=5, SA=6, SU=7)
+day_offsets <- weekday_map[days] - 1  # Monday = 0
+
+schedule <- tibble(
+  n = 0:(count - 1),
+  week = n %/% length(days),
+  day_index = n %% length(days),
+  date = floor_date(start, "week", week_start = 1) +
+         weeks(week) +
+         days(day_offsets[day_index + 1]) +
+         hours(hour(start)) +
+         minutes(minute(start))
+) |>
+  arrange(date) |>
+  mutate(
+    weekday = wday(date, label = TRUE),
+    session_type = if_else(weekday %in% c("Tue"), "Collab", "Milestone")
+  )
+
+campsite_url <- htmltools::a(
+  params$campsite,
+  href = glue::glue("https://{params$campsite}"))
+
+schedule_url <- htmltools::a(
+  params$scheduler,
+  href = glue::glue("https://{params$scheduler}"),
+  style = "font-size: 0.7em;")
+
+communication <- params$communication |> 
+  stringr::str_to_title()
+
+if (stringr::str_detect(tolower(params$communication), "teams") & stringr::str_detect(tolower(params$group), "pfizer") & stringr::str_detect(tolower(params$lesson1), "functions")) {
+  communication_img <- htmltools::img(src="images/microsoft-teams-pfizer-pinr.png")
+} else if (stringr::str_detect(tolower(params$communication), "teams") & stringr::str_detect(tolower(params$group), "pfizer")) {
+  communication_img <- htmltools::img(src="images/microsoft-teams-pfizer.png")
+} else if (stringr::str_detect(tolower(params$communication), "teams") & stringr::str_detect(tolower(params$group), "dow")) {
+  communication_img <- htmltools::img(src="images/microsoft-teams-dow.png")
+} else if (stringr::str_detect(tolower(params$communication), "teams")) {
+  communication_img <- htmltools::img(src="images/microsoft-teams.png")
+} else if (stringr::str_detect(tolower(params$communication), "slack") & stringr::str_detect(tolower(params$group), "mayo")) {
+  communication_img <- htmltools::img(src="images/slack-mayo.png")
+} else if (stringr::str_detect(tolower(params$communication), "slack")) {
+  communication_img <- htmltools::img(src="images/slack.png")
+}
+
+mondays <- lubridate::floor_date(
+  lubridate::as_date(rmarkdown::metadata$date) + (7 * (1:(params$weeks + 1))),
+  unit = "week",
+  week_start = 1) |> 
+  {\(x) paste(lubridate::month(x, label = TRUE), lubridate::day(x))}()
+
+new_campsite <- as.logical(params$new_campsite %||% FALSE)
+
+if (new_campsite) {
+  campsite_blank <- "images/campsite_new-blank.png"
+  campsite_annotated <- "images/campsite_new-campsite.png"
+  campsite_lessons <- "images/campsite_new-lessons.png"
+  campsite_milestone <- "images/campsite_new-milestone.png"
+  campsite_tracks <- "images/campsite_new-tracks.png"
+  
+  academy_lessons_a <- "images/academy_new-lesson-A.png"
+  academy_milestone <- "images/academy_new-milestone.png"
+} else {
+  campsite_blank <- "images/campsite_old-blank.png"
+  campsite_annotated <- "images/campsite_old-campsite.png"
+  campsite_lessons <- "images/campsite_old-lessons.png"
+  campsite_milestone <- "images/campsite_old-milestone.png"
+  campsite_tracks <- "images/campsite_old-tracks.png"
+  
+  academy_lessons_a <- "images/academy_old-lesson-A.png"
+  academy_milestone <- "images/academy_old-milestone.png"
+}
+
+```
 :::: columns
 ::: {.column width="30%"}
 ![](images/Klaus.JPG){.staff-image}
@@ -75,124 +192,6 @@ By the end of this course, you will be familiar with doing a number of things in
 
 <!-- defines strings for later slides -->
 ## Become `{r} params$become`. {.slide-marvel}
-
-```{r}
-library(stringr)
-library(lubridate)
-library(dplyr)
-library(tibble)
-
-# read raw .ics
-lines <- readLines("calendar/invite.ics")
-
-# handle possible line folding (important for some calendars)
-lines <- gsub("^\\s+", "", lines)
-
-# ---- isolate VEVENT block ----
-start_idx <- grep("^BEGIN:VEVENT", lines)
-end_idx   <- grep("^END:VEVENT", lines)
-
-event_lines <- lines[start_idx:end_idx]
-
-# ---- extract from event only ----
-rrule_line   <- event_lines[grepl("^RRULE", event_lines)][1]
-dtstart_line <- event_lines[grepl("^DTSTART", event_lines)][1]
-
-# ---- parse RRULE ----
-rrule <- str_remove(rrule_line, "RRULE:")
-
-count <- str_extract(rrule, "COUNT=\\d+") |>
-  str_remove("COUNT=") |>
-  as.integer()
-
-days <- str_extract(rrule, "BYDAY=[A-Z,]+") |>
-  str_remove("BYDAY=") |>
-  str_split(",") |>
-  unlist()
-
-# safety check
-stopifnot(!is.na(count), length(days) > 0)
-
-# ---- parse DTSTART ----
-start_str <- str_extract(dtstart_line, "\\d{8}T\\d{6}")
-start <- ymd_hms(start_str, tz = "Europe/London")
-
-# ---- expand schedule ----
-weekday_map <- c(MO=1, TU=2, WE=3, TH=4, FR=5, SA=6, SU=7)
-day_offsets <- weekday_map[days] - 1  # Monday = 0
-
-schedule <- tibble(
-  n = 0:(count - 1),
-  week = n %/% length(days),
-  day_index = n %% length(days),
-  date = floor_date(start, "week", week_start = 1) +
-         weeks(week) +
-         days(day_offsets[day_index + 1]) +
-         hours(hour(start)) +
-         minutes(minute(start))
-) |>
-  arrange(date) |>
-  mutate(
-    weekday = wday(date, label = TRUE),
-    session_type = if_else(weekday %in% c("Tue"), "Collab", "Milestone")
-  )
-
-#| echo: false
-campsite_url <- htmltools::a(
-  params$campsite,
-  href = glue::glue("https://{params$campsite}"))
-
-schedule_url <- htmltools::a(
-  params$scheduler,
-  href = glue::glue("https://{params$scheduler}"),
-  style = "font-size: 0.7em;")
-
-communication <- params$communication |> 
-  stringr::str_to_title()
-
-if (stringr::str_detect(tolower(params$communication), "teams") & stringr::str_detect(tolower(params$group), "pfizer") & stringr::str_detect(tolower(params$lesson1), "functions")) {
-  communication_img <- htmltools::img(src="images/microsoft-teams-pfizer-pinr.png")
-} else if (stringr::str_detect(tolower(params$communication), "teams") & stringr::str_detect(tolower(params$group), "pfizer")) {
-  communication_img <- htmltools::img(src="images/microsoft-teams-pfizer.png")
-} else if (stringr::str_detect(tolower(params$communication), "teams") & stringr::str_detect(tolower(params$group), "dow")) {
-  communication_img <- htmltools::img(src="images/microsoft-teams-dow.png")
-} else if (stringr::str_detect(tolower(params$communication), "teams")) {
-  communication_img <- htmltools::img(src="images/microsoft-teams.png")
-} else if (stringr::str_detect(tolower(params$communication), "slack") & stringr::str_detect(tolower(params$group), "mayo")) {
-  communication_img <- htmltools::img(src="images/slack-mayo.png")
-} else if (stringr::str_detect(tolower(params$communication), "slack")) {
-  communication_img <- htmltools::img(src="images/slack.png")
-}
-
-mondays <- lubridate::floor_date(
-  lubridate::as_date(rmarkdown::metadata$date) + (7 * (1:(params$weeks + 1))),
-  unit = "week",
-  week_start = 1) |> 
-  {\(x) paste(lubridate::month(x, label = TRUE), lubridate::day(x))}()
-
-new_campsite <- as.logical(params$new_campsite %||% FALSE)
-
-if (new_campsite) {
-  campsite_blank <- "images/campsite_new-blank.png"
-  campsite_annotated <- "images/campsite_new-campsite.png"
-  campsite_lessons <- "images/campsite_new-lessons.png"
-  campsite_milestone <- "images/campsite_new-milestone.png"
-  campsite_tracks <- "images/campsite_new-tracks.png"
-  
-  academy_lessons_a <- "images/academy_new-lesson-A.png"
-  academy_milestone <- "images/academy_new-milestone.png"
-} else {
-  campsite_blank <- "images/campsite_old-blank.png"
-  campsite_annotated <- "images/campsite_old-campsite.png"
-  campsite_lessons <- "images/campsite_old-lessons.png"
-  campsite_milestone <- "images/campsite_old-milestone.png"
-  campsite_tracks <- "images/campsite_old-tracks.png"
-  
-  academy_lessons_a <- "images/academy_old-lesson-A.png"
-  academy_milestone <- "images/academy_old-milestone.png"
-}
-
-```
 
 
 ::: notes
