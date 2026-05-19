@@ -1,0 +1,81 @@
+---
+title: "Factor variables"
+format: html
+---
+
+## Summary
+
+This could be used as an add on to the tidyverse week 5 tutorial "Modify Factors". This notebook illustrates the connection of the integer values underlying categorical variables.
+https://forcats.tidyverse.org/
+
+
+```{r}
+#| label: loading
+library(tidyverse)
+
+covid <- read_csv("data/covid.csv")
+```
+
+```{r}
+#| label: recreation-create
+covid_cumul <- covid |>
+  arrange(state, date) |>
+  group_by(state) |>
+  mutate(
+    cumul_cases = cumsum(cases), 
+    cumul_deaths = cumsum(deaths)
+  ) |>
+  ungroup() #|>
+  #select(date, state, cumul_cases, cumul_deaths)
+
+covid_cumul
+```
+
+Using case_when to create some classes based on overall cases.
+
+```{r}
+#| label: extension
+q25 = quantile(covid$cases, probs=.25)
+q75 = quantile(covid$cases, probs=.75)
+
+covid_cumul <- covid_cumul |>
+  mutate(
+    incidence = case_when(cases < q25 ~ "low",
+                          cases >= q25 & cases < q75 ~ "medium",
+                          cases >= q75 ~ "high")
+  )
+
+# simply convert a <chr> column into factor. It will number the classes according to the order of occurances 
+#covid_cumul <- covid_cumul |>
+#  mutate(incidence = factor(incidence))
+
+# or we order manually by setting the levels and we create a new column with the hidden integer values for each class
+covid_cumul <- covid_cumul |>
+  mutate(incidence = factor(incidence, levels = c("low", "medium", "high"), ordered = TRUE),
+         factor_as_integer = as.integer(incidence)) 
+
+covid_cumul
+
+# show the levels = unique classes of the categorical variable
+#level(covid_cumul$incidence)
+
+covid_cumul |>
+  summarize(
+    median = median(as.integer(incidence))
+  )
+
+# an ordered variable also allow us to filter based on the classes
+covid_cumul |>
+  filter(incidence > "medium")
+
+# or, possible, but less useful in reality, because makes the code quite unreadable
+covid_cumul |>
+  filter(as.integer(incidence) > 2)
+
+# the facets follow the order of the incidence variable
+ggplot(covid_cumul, aes(x=date,y=cumul_cases, color=state)) +
+  geom_line() +
+  facet_wrap(facets= ~incidence, ncol=1)
+```
+
+
