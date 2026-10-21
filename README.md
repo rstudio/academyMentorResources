@@ -11,6 +11,6 @@ Resources are organized by topic, under the general folders of
 
 Guidelines for demos:
 
-- built on open data (using the [Academy Data Gallery](https://posit-academy.quarto.pub/data-gallery/) or other sources)
+- built on open data (using the [Academy Data Gallery](https://github.com/rstudio/academy-data-gallery) or other sources)
 - fully reproducible
 - stand-alone / self-explanatory (code includes context, comments, etc)

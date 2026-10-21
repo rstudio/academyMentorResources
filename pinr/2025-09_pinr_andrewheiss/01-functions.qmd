@@ -17,11 +17,11 @@ Keep your environment panel ephemeral! Don't save workspaces. Make sure you use 
 
 If you would prefer to work in [Positron](https://posit.co/products/ide/positron/) instead of RStudio, you can complete this milestone in a Positron session inside of Posit Workbench. To do this, you will need to:
 
-1. Log in to [dev.academy.posit.team](https://dev.academy.posit.team/) (see instructions [here](https://posit-academy.quarto.pub/support/positron/login.html)).
+1. Log in to [dev.academy.posit.team](https://dev.academy.posit.team/) (see instructions [here](https://pub.academy.posit.team/content/18f57637-9191-4a0e-8a56-1a22c3ef80e7/tutorials/academy_intro/projects/projects.html)).
 
-2. Set up your Academy project in Positron if you haven’t done so already (see instructions [here](https://posit-academy.quarto.pub/support/positron/set-up-project.html)). **You'll need to use this GitHub URL: [`https://github.com/rstudio/academy-pinr-census`](https://github.com/rstudio/academy-pinr-census)**
+2. Set up your Academy project in Positron if you haven’t done so already (see instructions [here](https://pub.academy.posit.team/content/18f57637-9191-4a0e-8a56-1a22c3ef80e7/tutorials/academy_intro/projects/projects.html)). **You'll need to use this GitHub URL: [`https://github.com/rstudio/academy-pinr-census`](https://github.com/rstudio/academy-pinr-census)**
 
-Each milestone will require you to read and edit a Quarto document inside Positron. To learn how to use Positron and Quarto, see [here](https://posit-academy.quarto.pub/support/positron/positron-basics.html).
+Each milestone will require you to read and edit a Quarto document inside Positron. To learn how to use Positron and Quarto, see [here](https://pub.academy.posit.team/content/18f57637-9191-4a0e-8a56-1a22c3ef80e7/tutorials/academy_intro/ide/ide.html).
 
 
 ## Starting with the milestone

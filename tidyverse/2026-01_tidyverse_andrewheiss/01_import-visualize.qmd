@@ -6,7 +6,7 @@ date: "2026-01-27"
 
 ## SAS → R
 
-- [SAS to R recipes](https://posit-academy.quarto.pub/sassy-recipes/)
+- [SAS to R recipes](https://pub.academy.posit.team/content/837c8006-c6a1-48fe-8817-7c7fcd0b8ce4/sassy-recipes/index.html)
 
 ## Quarto
 
@@ -18,11 +18,11 @@ date: "2026-01-27"
 
 If you would prefer to work in [Positron](https://positron.posit.co/) instead of RStudio, you can complete this milestone in a Positron session inside of Posit Workbench. To do this, you will need to:
 
-1. Log in to [dev.academy.posit.team](https://dev.academy.posit.team/) (see instructions [here](https://posit-academy.quarto.pub/support/positron/login.html)).
+1. Log in to [dev.academy.posit.team](https://dev.academy.posit.team/) (see instructions [here](https://pub.academy.posit.team/content/837c8006-c6a1-48fe-8817-7c7fcd0b8ce4/tutorials/academy_intro/projects/projects.html)).
 
-2. Set up your Academy project in Positron if you haven’t done so already (see instructions [here](https://posit-academy.quarto.pub/support/positron/set-up-project.html)). **You'll need to use this GitHub URL: [`https://github.com/rstudio/academy-tidyverse-renal-treatment`](https://github.com/rstudio/academy-tidyverse-renal-treatment)**
+2. Set up your Academy project in Positron if you haven’t done so already (see instructions [here](https://pub.academy.posit.team/content/837c8006-c6a1-48fe-8817-7c7fcd0b8ce4/tutorials/academy_intro/projects/projects.html)). **You'll need to use this GitHub URL: [`https://github.com/rstudio/academy-tidyverse-renal-treatment`](https://github.com/rstudio/academy-tidyverse-renal-treatment)**
 
-Each milestone will require you to read and edit a Quarto document inside Positron. To learn how to use Positron and Quarto, see [here](https://posit-academy.quarto.pub/support/positron/positron-basics.html).
+Each milestone will require you to read and edit a Quarto document inside Positron. To learn how to use Positron and Quarto, see [here](https://pub.academy.posit.team/content/837c8006-c6a1-48fe-8817-7c7fcd0b8ce4/tutorials/academy_intro/ide/ide.html).
 
 ## Milestone start
 
