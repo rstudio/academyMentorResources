@@ -6,7 +6,7 @@ date: "2026-01-27"
 
 ## SAS → R
 
-- [SAS to R recipes](https://pub.academy.posit.team/content/837c8006-c6a1-48fe-8817-7c7fcd0b8ce4/sassy-recipes/index.html)
+- [SAS to R recipes](https://pub.academy.posit.team/content/837c8006-c6a1-48fe-8817-7c7fcd0b8ce4/sas_to_r.html)
 
 ## Quarto
 
