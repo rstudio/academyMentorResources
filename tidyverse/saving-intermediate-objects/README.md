@@ -1,0 +1,1 @@
+Learners had questions about how to save intermediate data or temporary data—apparently SAS handles this in some way that I don't fully understand.  I put together a script demoing different ways that one could handle saving intermediate data/R objects that would be created, for example, by a long-running data wrangling step before analysis or visualiaztion.
