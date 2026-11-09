@@ -1,0 +1,1 @@
+Learners were a bit thrown off by being introduced to the tilde operator (`~`) in the context of `case_when()`.  They wanted to know what it was, so I came up with this script.  It has examples of where they are likely to encounter a `~` in order from making the most sense to least sense, IMO, starting with actual formulas in statistical modeling.
